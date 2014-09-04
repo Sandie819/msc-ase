@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Wizard
+Bundle-SymbolicName: msc.refactor.codecleaner.wizard;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: msc.refactor.codecleaner.wizard.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.ide,
+ org.eclipse.core.resources,
+ org.eclipse.jdt.ui;bundle-version="3.10.0",
+ org.eclipse.jdt.core;bundle-version="3.10.0",
+ org.eclipse.ui.navigator;bundle-version="3.5.400",
+ org.eclipse.jface.text;bundle-version="3.9.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
