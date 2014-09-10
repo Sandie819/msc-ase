@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/Tools/eclipse/plugins/org.eclipse.ui.workbench.texteditor_3.9.0.v20140411-1521.jar"/>
 	<classpathentry kind="lib" path="C:/Tools/eclipse/plugins/org.eclipse.jface.text_3.9.0.v20140521-1657.jar"/>
 	<classpathentry kind="lib" path="C:/Tools/eclipse/plugins/org.eclipse.ui.editors_3.8.200.v20140401-1310.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mulligans/Downloads/javaparser-1.0.8/javaparser-1.0.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -98,23 +98,23 @@ public class MainPanelPage extends WizardPage implements Listener, PropertyChang
 		IFile file = (IFile) newValue;
 		System.out.print("File name = "+file.getName()+ " file extension= " +file.getFileExtension());
 			
-		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
-		ITextEditor javaEditor = null;
-		try {
-			javaEditor = (ITextEditor) JavaUI.openInEditor(compilationUnit);
-		} catch (PartInitException | JavaModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
-		//SourceViewer viewer = new SourceViewer(mainComposite, null, SWT.V_SCROLL | SWT.H_SCROLL);
-		JavaSourceViewerConfiguration config = new JavaSourceViewerConfiguration(
-				JavaPlugin.getDefault().getJavaTextTools().getColorManager(), 
-				store, javaEditor, IJavaPartitions.JAVA_PARTITIONING);
-		viewer.configure(config);		
-		viewer.getTextWidget().setFont(JFaceResources.getFont("org.eclipse.jdt.ui.editors.textfont"));
-		viewer.refresh();
+//		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
+//		ITextEditor javaEditor = null;
+//		try {
+//			javaEditor = (ITextEditor) JavaUI.openInEditor(compilationUnit);
+//		} catch (PartInitException | JavaModelException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		IPreferenceStore store = JavaPlugin.getDefault().getCombinedPreferenceStore();
+//		//SourceViewer viewer = new SourceViewer(mainComposite, null, SWT.V_SCROLL | SWT.H_SCROLL);
+//		JavaSourceViewerConfiguration config = new JavaSourceViewerConfiguration(
+//				JavaPlugin.getDefault().getJavaTextTools().getColorManager(), 
+//				store, javaEditor, IJavaPartitions.JAVA_PARTITIONING);
+//		viewer.configure(config);		
+//		viewer.getTextWidget().setFont(JFaceResources.getFont("org.eclipse.jdt.ui.editors.textfont"));
+//		viewer.refresh();
 	
 	}
 
