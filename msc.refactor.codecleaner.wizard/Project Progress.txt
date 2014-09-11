@@ -3,3 +3,6 @@ Project Progress
 - Created Plugin using a wizard style approach
 - Added button to apply a random refactoring to a selected java file
 - Random Refactoring - rename class, rename first method
+- Clean code - Programatically organise imports. (next to identify and remove unused methods, variables etc)
+
+@TODO: Display record of what was changed
