@@ -13,9 +13,11 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.refactoring.IJavaRefactorings;
 import org.eclipse.jdt.core.refactoring.descriptors.RenameJavaElementDescriptor;
 import org.eclipse.jdt.internal.ui.IJavaHelpContextIds;
+import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -74,13 +76,20 @@ public class TreeSelector extends ElementTreeSelectionDialog implements ISelecti
 	}
 
 	protected void randomRefactor() {
-		IFile file = controller.getModel().getCurrentSelectedFile();
-
+		IFile file = controller.getModel().getFileFromStructuredSelection();
 		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
 
-		renameSelectedClass(compilationUnit);
-		renameFirstMethod(compilationUnit);
-
+		OrganizeImportsAction organiseImportsAction = new OrganizeImportsAction(controller.getModel().getPart().getSite());
+		organiseImportsAction.run(compilationUnit);
+		try {
+			compilationUnit.save(null, false);
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//renameSelectedClass(compilationUnit);
+		//renameFirstMethod(compilationUnit);
 	}
 
 	private void renameFirstMethod(ICompilationUnit compilationUnit) {
@@ -148,26 +157,25 @@ public class TreeSelector extends ElementTreeSelectionDialog implements ISelecti
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		ISelection selection = event.getSelection();
-		boolean isClassFile = false;
-		IFile file = null;
-		if(selection!=null) 		{
 
+		if(selection!=null) {
 			if (selection instanceof IStructuredSelection) {
-				IStructuredSelection ssel = (IStructuredSelection) selection;
-				Object obj = ssel.getFirstElement();
-				file = (IFile) Platform.getAdapterManager().getAdapter(obj, IFile.class);
-				if (file != null) {
-					if (obj instanceof IAdaptable) {
-						file = (IFile) ((IAdaptable) obj).getAdapter(IFile.class);
-						isClassFile = true;						
-						controller.firePropertyChange("CLASS_SELECTED", false, file);
-					} 
-				}
+				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+				controller.getModel().setStructuredSelection(structuredSelection);
+				randomRefactorButton.setEnabled(true);
+//				Object obj = structuredSelection.getFirstElement();
+//				file = (IFile) Platform.getAdapterManager().getAdapter(obj, IFile.class);
+//				if (file != null) {
+//					if (obj instanceof IAdaptable) {
+//						file = (IFile) ((IAdaptable) obj).getAdapter(IFile.class);
+//						isClassFile = true;						
+//						controller.firePropertyChange("CLASS_SELECTED", false, file);
+//					} 
+//				}
 
 			}
 		}
-		controller.getModel().setCurrentSelectedFile(file);
-		randomRefactorButton.setEnabled(isClassFile);
+		
 	}
 
 }

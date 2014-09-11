@@ -66,6 +66,7 @@ public class WizardWorkBenchAction implements IWorkbenchWindowActionDelegate {
 	public void init(IWorkbenchWindow window) {	
 		model = new WizardModel();
 		model.setWindow(window);
+		model.setPart(window.getActivePage().getActivePart());
 		controller = new WizardController(model);
 	}
 
