@@ -31,8 +31,8 @@
             <separator name="group" />    
      </menu>
         <action
-        	label="Code Cleaner Wizard"
-            icon="icons/action.gif"
+        	label="Code Cleaning Wizard"
+            icon="icons/wizard-icon.gif"
             class="msc.refactor.codecleaner.wizard.controller.WizardAction"
             id="wizard.action1"            
             enablesFor="*"            
