@@ -3,45 +3,11 @@
 <plugin>
 
 <extension
-      id="wizard"
-      name="Clean Code"
-      point="org.eclipse.ui.newWizards">
-   <category
-         name="Code Cleaner Wizard"
-         id="wizard.category1">
-   </category>
-   <wizard
-         name="Code Cleaner"
-         icon="icons/wizard.gif"
-         category="wizard.category1"
-         class="msc.refactor.codecleaner.wizard.view.CodeCleanerWizard"
-         id="wizard.wizard1">
-      <description>
-      	Describe your holiday choices
-      </description>
-   </wizard>
-</extension>
-
-<extension
-      point="org.eclipse.ui.popupMenus">
-   <objectContribution
-         objectClass="org.eclipse.core.resources.IFile"
-         id="msc.refactor.codecleaner.wizard.popup1">
-      <action
-            label="Code Cleaner"
-            icon="icons/action.gif"
-            class="msc.refactor.codecleaner.wizard.controller.WizardWorkBenchAction"
-            id="wizard.action1">
-      </action>
-   </objectContribution>
-</extension>
-
-<extension
          point="org.eclipse.ui.actionSets">
       <actionSet
             description="Refactoring Actions"
             id="msc.refactor.codecleaner.wizard.popup1"
-            label="Spartanization"
+            label="CodeCleaner"
             visible="true">
          <menu
                label="Refactor"
@@ -59,7 +25,7 @@
             <separator name="scriptGroup"/>
         </menu>
       <menu
-               id="il.ac.technion.cs.ssdl.spartan.refactoring.menu"
+               id="msc.refactor.codecleaner.menu"
                label="Code Cleaner"
                path="org.eclipse.jdt.ui.refactoring.menu/codeCleanerGroup">
             <separator name="group" />    
@@ -67,14 +33,48 @@
         <action
         	label="Code Cleaner Wizard"
             icon="icons/action.gif"
-            class="msc.refactor.codecleaner.wizard.controller.WizardWorkBenchAction"
+            class="msc.refactor.codecleaner.wizard.controller.WizardAction"
             id="wizard.action1"            
             enablesFor="*"            
-            menubarPath="org.eclipse.jdt.ui.refactoring.menu/il.ac.technion.cs.ssdl.spartan.refactoring.menu/group">            
+            menubarPath="org.eclipse.jdt.ui.refactoring.menu/msc.refactor.codecleaner.menu/group">            
       </action>       
       <!-- More actions -->
       
     </actionSet>
-   </extension>
+ </extension>
+ 
+<!--<extension
+      id="wizard"
+      name="Clean Code"
+      point="org.eclipse.ui.newWizards">
+   <category
+         name="Code Cleaner Wizard"
+         id="wizard.category1">
+   </category>
+   <wizard
+         name="Code Cleaner"
+         icon="icons/wizard.gif"
+         category="wizard.category1"
+         class="msc.refactor.codecleaner.wizard.view.CodeCleanerWizard"
+         id="wizard.wizard1">
+      <description>
+      	Code Cleaner 
+      </description>
+   </wizard>
+</extension>-->
+
+<!--<extension
+      point="org.eclipse.ui.popupMenus">
+   <objectContribution
+         objectClass="org.eclipse.core.resources.IFile"
+         id="msc.refactor.codecleaner.wizard.popup1">
+      <action
+            label="Code Cleaner"
+            icon="icons/action.gif"
+            class="msc.refactor.codecleaner.wizard.controller.WizardAction"
+            id="wizard.action1">
+      </action>
+   </objectContribution>
+</extension>-->
 
 </plugin>

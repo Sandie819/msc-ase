@@ -1,5 +1,15 @@
 Project Progress
 
-- Created Plugin using a wizard style approach
-- Added button to apply a random refactoring to a selected java file
-- Random Refactoring - rename class, rename first method
+- Plugin 
+	- Built wizard style approach (DONE)
+- Go Button that applies a random refactoring 
+	- "Apply Random Refactoring" button (DONE)
+	- When clicked renames first method in class (DONE)
+- Apply Sequence of random refactorings
+	- Rename refactorings (method) (DONE)
+	- Clean class - organise imports, remove unused methods, variables etc (In Progress)
+	- Another series of refactorings to include logical organisation of code in the class
+- Add metrics (or some kind of fitness function)
+- Code smell detection
+	- Incorporate FindBugs Plugin
+- Merge workings together new plugin, refactorings, metrics & findBugs
