@@ -9,7 +9,7 @@ Project Progress
 	- Rename refactorings (method) (DONE)
 	- Clean class - organise imports, remove unused methods, variables etc (In Progress)
 	- Another series of refactorings to include logical organisation of code in the class
-- Add metrics (or some kind of fitness function)
+- Add metrics (or some kind of fitness function) (In Progress)
 - Code smell detection
 	- Incorporate FindBugs Plugin
 - Merge workings together new plugin, refactorings, metrics & findBugs
