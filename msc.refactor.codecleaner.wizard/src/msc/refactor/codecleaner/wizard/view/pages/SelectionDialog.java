@@ -1,26 +1,25 @@
 package msc.refactor.codecleaner.wizard.view.pages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import msc.refactor.codecleaner.multiplerefactoring.MultipleRefactoring;
-import msc.refactor.codecleaner.multiplerefactoring.RefactorAction;
 import msc.refactor.codecleaner.wizard.controller.WizardController;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.RefactoringTickProvider;
-import org.eclipse.ltk.internal.core.refactoring.NotCancelableProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,13 +28,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
+//import de.tobject.findbugs.FindBugsJob;
+//import de.tobject.findbugs.builder.FindBugsWorker;
+//import de.tobject.findbugs.builder.WorkItem;
+//import edu.umd.cs.findbugs.plugin.eclipse.util.MutexSchedulingRule;
+
 public class SelectionDialog extends ElementTreeSelectionDialog implements ISelectionChangedListener {
 
 	private Button randomRefactorButton;
-	private RefactorAction refactorAction;
-	private MultipleRefactoring multipleRefactoring;
+	private Button bugFinderButton;
+	private Button analyseMeButton;
 	private WizardController controller;	
-	private IProgressMonitor monitor;
 
 	/**
 	 * Selection Dialog constructor
@@ -49,12 +52,10 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 			MultipleRefactoring multipleRefactoring, 
 			IBaseLabelProvider labelProvider,
 			ITreeContentProvider contentProvider) {
-		
+
 		super(controller.getModel().getWindow().getShell(), labelProvider, contentProvider);
 		setInput(ResourcesPlugin.getWorkspace().getRoot());
 		this.controller = controller;
-		refactorAction = new RefactorAction();
-		monitor = new NullProgressMonitor();
 	}
 
 	@Override
@@ -72,7 +73,27 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 		});
 		randomRefactorButton.setFont(parent.getFont());
 		randomRefactorButton.setEnabled(false);
+		
+//		bugFinderButton = new Button(result, SWT.PUSH);
+//		bugFinderButton.setText("Find Bugs"); 
+//		bugFinderButton.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent event) {
+//				//handleFindBugs();
+//			}
+//		});
+//		bugFinderButton.setFont(parent.getFont());
+//		bugFinderButton.setEnabled(true);
 
+		analyseMeButton = new Button(result, SWT.PUSH);
+		analyseMeButton.setText("Analyse Me"); 
+		analyseMeButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				handleAnalyse();
+			}
+		});
+		analyseMeButton.setFont(parent.getFont());
+		analyseMeButton.setEnabled(false);
+		
 		applyDialogFont(result);
 
 		//PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IJavaHelpContextIds.BP_SELECT_DEFAULT_OUTPUT_FOLDER_DIALOG);
@@ -80,64 +101,76 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 		return result;
 	}
 
-	/**
-	 * Button Random Refactor (Apply several random re-factorings)
-	 */
-	protected void randomRefactor() {
-
-//		IFile file = controller.getModel().getFileFromStructuredSelection();
-//		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
-//
-//		multipleRefactoring = new MultipleRefactoring();
-//		//multipleRefactoring.addRefactoringsToBeDone(refactorAction.getRenameFirstMethodRefactoring(compilationUnit));
-//		multipleRefactoring.addRefactoringsToBeDone(refactorAction.getRenameSelectedClassRefactoring(compilationUnit));
-//		multipleRefactoring.setfCompilationUnit(compilationUnit);
-//		
-//		try {
-//			multipleRefactoring.checkInitialConditions(monitor);
-//			multipleRefactoring.checkFinalConditions(monitor);
-//			multipleRefactoring.createChange(monitor);
-//		
-//			RefactoringTickProvider rtp= multipleRefactoring.getRefactoringTickProvider();
-//			for(Change change:  multipleRefactoring.getChanges()){
-//				//change.perform(monitor);
-//				change.initializeValidationData(new NotCancelableProgressMonitor(
-//						new SubProgressMonitor(monitor, rtp.getInitializeChangeTicks())));
-//			}		
-			
-			controller.firePropertyChange("REFACTORED", false, null);
-			randomRefactorButton.setEnabled(false);
-//			compilationUnit.save(monitor, false);	
-
-//		} catch (CoreException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-			
-//			OrganizeImportsAction organiseImportsAction = new OrganizeImportsAction(controller.getModel().getPart().getSite());
-//			organiseImportsAction.run(compilationUnit);
-//			try {
-//				IProgressMonitor monitor = new NullProgressMonitor();		
-//				compilationUnit.save(monitor, false);
-//			} catch (JavaModelException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+	protected void handleAnalyse() {
+		controller.firePropertyChange("ANALYSE", false, null);
+		//randomRefactorButton.setEnabled(false);
 		
 	}
-	
+
+	//	private void handleFindBugs() {
+//		WorkItem workItem = new WorkItem(controller.getModel().getFileFromStructuredSelection());
+//		List<WorkItem> workItems = new ArrayList<>();
+//		workItems.add(workItem);
+//		
+//		FindBugsJob runFindBugs = new StartedFromCodeCleaner("Finding bugs in " + 
+//				controller.getModel().getFileFromStructuredSelection() + "...", 
+//				controller.getModel().getFileFromStructuredSelection(), workItems);
+//		IProgressMonitor monitor = new NullProgressMonitor();
+//        runFindBugs.run(monitor);
+//	}
+	/**
+	 * Button Random Refactor 
+	 */
+	private void randomRefactor() {
+		controller.firePropertyChange("REFACTORED", false, null);
+		randomRefactorButton.setEnabled(false);
+	}
+
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		ISelection selection = event.getSelection();
 
+		IStructuredSelection structuredSelection = null;
+		boolean enableButton = false;
 		if(selection!=null) {
 			if (selection instanceof IStructuredSelection) {
-				IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-				controller.getModel().setStructuredSelection(structuredSelection);
-				randomRefactorButton.setEnabled(true);
+				structuredSelection = (IStructuredSelection) selection;
+				Object element = structuredSelection.getFirstElement();
+				IFile file = (IFile) Platform.getAdapterManager().getAdapter(element, IFile.class);
+				if (file != null) {
+					if (element instanceof IAdaptable) {						
+						enableButton = true;
+					} 
+				}
+
 			}
 		}
-		
-	}
+		controller.getModel().setStructuredSelection(structuredSelection);
+		randomRefactorButton.setEnabled(enableButton);
+		analyseMeButton.setEnabled(enableButton);
 
+	}
+	
+//    private final static class StartedFromCodeCleaner extends FindBugsJob {
+//        private final List<WorkItem> resources;
+//
+//        private StartedFromCodeCleaner(String name, IResource resource, 
+//        		List<WorkItem> resources) {
+//            super(name, resource);
+//            this.resources = resources;
+//        }
+//
+//        @Override
+//        protected boolean supportsMulticore(){
+//            return MutexSchedulingRule.MULTICORE;
+//        }
+//
+//        @Override
+//        protected void runWithProgress(IProgressMonitor monitor) throws CoreException {
+//            FindBugsWorker worker = new FindBugsWorker(getResource(), monitor);
+//            worker.work(resources);
+//        }
+//    }
+
+	
 }

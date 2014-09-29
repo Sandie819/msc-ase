@@ -16,6 +16,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors;bundle-version="3.8.200",
  org.eclipse.ltk.core.refactoring,
  org.eclipse.jdt.core.manipulation,
- org.eclipse.ltk.ui.refactoring;bundle-version="3.7.100"
+ org.eclipse.ltk.ui.refactoring;bundle-version="3.7.100",
+ javaparser;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

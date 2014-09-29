@@ -21,7 +21,7 @@ public class RefactorAction {
 	 * @param compilationUnit
 	 * @return
 	 */
-	public Refactoring getRenameFirstMethodRefactoring(ICompilationUnit compilationUnit) {
+	public Refactoring getRenameMethodRefactoring(ICompilationUnit compilationUnit, int methodNo) {
 		IMethod firstMethod = null;
 		RefactoringContribution contribution =
 				RefactoringCore.getRefactoringContribution(IJavaRefactorings.RENAME_METHOD);		
@@ -33,17 +33,18 @@ public class RefactorAction {
 			for (int i = 0; i < types.length; i++) {
 				IType type = types[i];
 				IMethod[] methods = type.getMethods();
-				firstMethod = methods[0];
+				firstMethod = methods[methodNo];
 				System.out.println(firstMethod.getElementName());
 				
-				if(firstMethod.isConstructor()){
+				if(firstMethod==null || firstMethod.isConstructor()
+						|| firstMethod.getElementName().equals("main")){
 					continue;
 				}
 					
 				RenameJavaElementDescriptor descriptor =
 						(RenameJavaElementDescriptor) contribution.createDescriptor();
 				descriptor.setProject(compilationUnit.getResource().getProject().getName());
-				descriptor.setNewName(firstMethod.getElementName()+"RandomRename"); // new name for a Class
+				descriptor.setNewName(firstMethod.getElementName()+"RandomRename"+methodNo); // new name for a Class
 				descriptor.setJavaElement(firstMethod);
 				descriptor.setUpdateReferences(true);
 				

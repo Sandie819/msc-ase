@@ -73,16 +73,22 @@ public class MultipleRefactoring extends Refactoring {
 				"Multiple Refactorings", fCompilationUnit);
 		List<Change> changes = new ArrayList<Change>();
 		for(Refactoring refactoring: refactoringsToBeDone){
+			
 			result = refactoring.createChange(pm);
 			changes.add(result);
 
+		}
+		Change combinedChange = null;
+		TextChangeCombiner changeCombiner = new TextChangeCombiner();
+		for(Change change: changes) {
+			combinedChange = changeCombiner.combineChanges(change);
 		}
 
 		setChanges(changes);
 		//		MultiTextEdit root = new MultiTextEdit();
 		//	    result.setEdit(root);
 		//	    root.addChild(astRewrite.rewriteAST());
-		return result;
+		return combinedChange;
 	}
 
 	protected CompilationUnit parse(IProgressMonitor monitor, ICompilationUnit compilationUnit) {
