@@ -2,7 +2,6 @@ package msc.refactor.codecleaner.wizard.view.pages;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FileNotFoundException;
 
 import msc.refactor.codecleaner.metrics.cohesion.CalculateCohesionMetrics;
 import msc.refactor.codecleaner.multiplerefactoring.MultipleRefactoring;
@@ -66,15 +65,9 @@ public class MultipleRefactoringConfigurationPage extends UserInputWizardPage im
 
 	private void handleAnaylseSelection(Object oldValue, Object newValue) {
 		IFile file = controller.getModel().getFileFromStructuredSelection();
-		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
 		calculateCohesionMetrics = new CalculateCohesionMetrics();
-		try {
-			calculateCohesionMetrics.calculate(file);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//calculateCohesionMetrics.calculate(compilationUnit);
+		calculateCohesionMetrics.calculate(file);
+		
 	}
 
 	private void handleRandomRefactoringApplied(Object oldValue, Object newValue) {
