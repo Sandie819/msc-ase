@@ -17,6 +17,15 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.jdt.core.manipulation,
  org.eclipse.ltk.ui.refactoring;bundle-version="3.7.100",
- javaparser;bundle-version="1.0.0"
+ javaparser;bundle-version="1.0.0",
+ org.eclipse.draw2d,
+ gr.uom.java.jdeodorant;bundle-version="5.0.20"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Export-Package: msc.refactor.codecleaner.metrics.cohesion,
+ msc.refactor.codecleaner.multiplerefactoring,
+ msc.refactor.codecleaner.wizard,
+ msc.refactor.codecleaner.wizard.controller,
+ msc.refactor.codecleaner.wizard.model,
+ msc.refactor.codecleaner.wizard.view,
+ msc.refactor.codecleaner.wizard.view.pages

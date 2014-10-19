@@ -8,12 +8,16 @@ import org.eclipse.ltk.core.refactoring.RefactoringDescriptor;
 public class MultipleRefactoringContribution extends RefactoringContribution {
 
 	@Override
-	public RefactoringDescriptor createDescriptor(String id, String project, String description, String comment, Map arguments, int flags) {
-		return new MultipleRefactoringDescriptor(project, description, comment, arguments);
+	public RefactoringDescriptor createDescriptor(String id, String project,
+			String description, String comment, @SuppressWarnings("rawtypes") Map arguments, int flags) {
+		
+		return new MultipleRefactoringDescriptor(project, description, comment,
+				arguments);
 	}
 
 	@Override
-	public Map retrieveArgumentMap(RefactoringDescriptor descriptor) {
+	public Map<?, ?> retrieveArgumentMap(RefactoringDescriptor descriptor) {
+		
 		if (descriptor instanceof MultipleRefactoringDescriptor)
 			return ((MultipleRefactoringDescriptor) descriptor).getArguments();
 		return super.retrieveArgumentMap(descriptor);

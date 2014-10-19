@@ -12,9 +12,11 @@ public class MultipleRefactoringDescriptor extends RefactoringDescriptor {
 
 	public static final String REFACTORING_ID= "msc.refactor.codecleaner.refactor";
 
-	private final Map fArguments;
+	private final Map<?, ?> fArguments;
 
-	public MultipleRefactoringDescriptor(String project, String description, String comment, Map arguments) {
+	public MultipleRefactoringDescriptor(String project, String description, 
+			String comment, Map<?, ?> arguments) {
+		
 		super(REFACTORING_ID, project, description, comment, RefactoringDescriptor.STRUCTURAL_CHANGE | RefactoringDescriptor.MULTI_CHANGE);
 		fArguments= arguments;
 	}
@@ -26,7 +28,7 @@ public class MultipleRefactoringDescriptor extends RefactoringDescriptor {
 		return refactoring;
 	}
 
-	public Map getArguments() {
+	public Map<?, ?> getArguments() {
 		return fArguments;
 	}
 }

@@ -16,6 +16,11 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+/**
+ * Multiple-Refactoring facilitates the combination of several Refactorings
+ * 
+ * @author Sandra Mulligan
+ */
 public class MultipleRefactoring extends Refactoring {
 
 	private List<Refactoring> refactoringsToBeDone = null;
@@ -23,13 +28,9 @@ public class MultipleRefactoring extends Refactoring {
 	private ICompilationUnit fCompilationUnit;
 	private CompilationUnit fJavaAST;
 
-	public MultipleRefactoring() {
+	public MultipleRefactoring() {		
 		super();		
-	}
-
-	@Override
-	public String getName() {
-		return "Multiple Refactorings";
+		refactoringsToBeDone = new ArrayList<>();
 	}
 
 	@Override
@@ -78,19 +79,20 @@ public class MultipleRefactoring extends Refactoring {
 			changes.add(result);
 
 		}
-		Change combinedChange = null;
-		TextChangeCombiner changeCombiner = new TextChangeCombiner();
-		for(Change change: changes) {
-			combinedChange = changeCombiner.combineChanges(change);
-		}
+//		Change combinedChange = null;
+//		TextChangeCombiner changeCombiner = new TextChangeCombiner();
+//		for(Change change: changes) {
+//			combinedChange = changeCombiner.combineChanges(change);
+//		}
 
 		setChanges(changes);
 		//		MultiTextEdit root = new MultiTextEdit();
 		//	    result.setEdit(root);
 		//	    root.addChild(astRewrite.rewriteAST());
-		return combinedChange;
+		return result;
 	}
 
+	@SuppressWarnings("deprecation")
 	protected CompilationUnit parse(IProgressMonitor monitor, ICompilationUnit compilationUnit) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -144,6 +146,23 @@ public class MultipleRefactoring extends Refactoring {
 	public RefactoringStatus initialize(Map fArguments) {		
 		RefactoringStatus status= new RefactoringStatus();		
 		return status;
+	}
+	
+	@Override
+	public String getName() {
+
+		StringBuffer stringBuffer = new StringBuffer();
+		for(Refactoring refactoring : refactoringsToBeDone) {
+			stringBuffer.append(refactoring.getName()).append("+");
+		}
+		String name = stringBuffer.toString();
+
+		if(!name.isEmpty()) {
+			return name.substring(0, name.lastIndexOf("+") );	
+		} else {
+			return "Multiple Refactoring";
+		}
+
 	}
 
 }

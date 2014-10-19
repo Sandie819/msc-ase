@@ -19,15 +19,16 @@ import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 
-public class LCOM  {
+public class LcomMetric  {
 
 	private Set<IMethod> methods = new HashSet<IMethod>();
 	private Set<IField> fields = new HashSet<IField>();
 	private static Map<IField, Integer> INSTANCE_VARIABLE_COUNTER;
 	
+	
 	private static Boolean METHOD_HAS_REF = null;
 
-	public LCOM() {
+	public LcomMetric() {
 		INSTANCE_VARIABLE_COUNTER = new HashMap<IField, Integer>();
 	}
 

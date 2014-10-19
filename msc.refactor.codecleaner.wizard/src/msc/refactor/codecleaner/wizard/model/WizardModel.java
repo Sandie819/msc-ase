@@ -14,6 +14,7 @@ public class WizardModel {
 	private ISelection selection;
 	private IWorkbenchWindow window;
 	private IStructuredSelection structuredSelection;
+	private RefactoringOpportunities refactoringOpportunities;
 	
 	public IWorkbenchPart getPart() {
 		return part;
@@ -41,6 +42,13 @@ public class WizardModel {
 		this.structuredSelection = structuredSelection;
 	}
 	
+	public RefactoringOpportunities getRefactoringOpportunities() {
+		return refactoringOpportunities;
+	}
+	public void setRefactoringOpportunities(
+			RefactoringOpportunities refactoringOpportunities) {
+		this.refactoringOpportunities = refactoringOpportunities;
+	}
 	public IFile getFileFromStructuredSelection() {		 
 		Object obj = structuredSelection.getFirstElement();
 		IFile file = (IFile) Platform.getAdapterManager().getAdapter(obj, IFile.class);

@@ -31,10 +31,7 @@ public class WizardAction implements IWorkbenchWindowActionDelegate {
 		return multipleRefactoring;
 	}
 
-	@SuppressWarnings("restriction")
 	public void startWizard(RefactoringWizard wizard) {
-//		new RefactoringStarter().activate(wizard, model.getWindow().getShell(), wizard.getDefaultPageTitle(), 
-//				RefactoringSaveHelper.SAVE_REFACTORING);
 		try {
 			Shell shell= PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(

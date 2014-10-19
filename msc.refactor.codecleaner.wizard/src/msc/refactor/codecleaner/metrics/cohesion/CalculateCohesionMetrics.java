@@ -7,10 +7,10 @@ import org.eclipse.jdt.core.JavaModelException;
 
 public class CalculateCohesionMetrics {
 
-	private LCOM lcom;
+	private LcomMetric lcom;
 
-	public void calculate(IFile file) {
-		lcom = new LCOM();
+	public LcomMetric calculate(IFile file) {
+		lcom = new LcomMetric();
 		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
 		try {
 			double lcomValue = lcom.calculateLCOM(compilationUnit);
@@ -22,6 +22,6 @@ public class CalculateCohesionMetrics {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		return lcom;
 	}
 }

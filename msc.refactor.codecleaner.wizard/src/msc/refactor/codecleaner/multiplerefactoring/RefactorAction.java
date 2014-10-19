@@ -19,7 +19,7 @@ public class RefactorAction {
 	 * programmatically
 	 * 
 	 * @param compilationUnit
-	 * @return
+	 * @returng
 	 */
 	public Refactoring getRenameMethodRefactoring(ICompilationUnit compilationUnit, int methodNo) {
 		IMethod firstMethod = null;
