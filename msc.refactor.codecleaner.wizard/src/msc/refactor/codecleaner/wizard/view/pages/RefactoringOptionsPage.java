@@ -50,7 +50,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		selectedRefactorings = new ArrayList<Refactoring>();
 		refactoringBuilder = new RefactoringBuilder();
 		
-		refactorings = new ArrayList<>();
+		refactorings = new ArrayList<RefactoringEnum>();
 		refactorings.add(RefactoringEnum.EXTRACT_METHOD);
 		refactorings.add(RefactoringEnum.EXTRACT_CLASS);
 		refactorings.add(RefactoringEnum.REPLACE_METHOD);

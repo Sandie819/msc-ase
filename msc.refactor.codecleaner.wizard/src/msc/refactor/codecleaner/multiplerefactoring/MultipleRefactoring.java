@@ -30,7 +30,7 @@ public class MultipleRefactoring extends Refactoring {
 
 	public MultipleRefactoring() {		
 		super();		
-		refactoringsToBeDone = new ArrayList<>();
+		refactoringsToBeDone = new ArrayList<Refactoring>();
 	}
 
 	@Override

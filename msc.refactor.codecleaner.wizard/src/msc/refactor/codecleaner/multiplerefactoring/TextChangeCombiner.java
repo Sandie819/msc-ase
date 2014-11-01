@@ -44,8 +44,8 @@ public class TextChangeCombiner {
 			return masterChange;
 		}
 		
-		Map<Object, TextChange> resource2textChange = new LinkedHashMap<>();
-		List<Change> otherChanges = new ArrayList<>();
+		Map<Object, TextChange> resource2textChange = new LinkedHashMap<Object, TextChange>();
+		List<Change> otherChanges = new ArrayList<Change>();
 		
 		visitCompositeChange((CompositeChange) masterChange, resource2textChange, otherChanges);
 		

@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +40,8 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 			ITreeContentProvider contentProvider, 
 			UserInputWizardPage callingPage) {
 
-		super(controller.getModel().getWindow().getShell(), labelProvider, contentProvider);
+		super(controller.getModel().getWindow().getShell(), new LabelProvider(), 
+				contentProvider);
 		setInput(ResourcesPlugin.getWorkspace().getRoot());
 		this.controller = controller;
 		this.callingPage = callingPage;
