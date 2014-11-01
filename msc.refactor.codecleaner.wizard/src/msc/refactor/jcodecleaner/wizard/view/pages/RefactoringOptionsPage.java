@@ -58,14 +58,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		selectedRefactorings = new ArrayList<Refactoring>();
 		refactoringBuilder = new RefactoringBuilder();
 		
-<<<<<<< HEAD:msc.refactor.codecleaner.wizard/src/msc/refactor/jcodecleaner/wizard/view/pages/RefactoringOptionsPage.java
-		refactorings = new ArrayList<>();
-=======
-		refactorings = new ArrayList<RefactoringEnum>();
-		refactorings.add(RefactoringEnum.EXTRACT_METHOD);
-		refactorings.add(RefactoringEnum.EXTRACT_CLASS);
-		refactorings.add(RefactoringEnum.REPLACE_METHOD);
->>>>>>> 19444e6b2cf57653df0037e12ecb78da809f7816:msc.refactor.codecleaner.wizard/src/msc/refactor/codecleaner/wizard/view/pages/RefactoringOptionsPage.java
+
 	}
 
 	@Override
