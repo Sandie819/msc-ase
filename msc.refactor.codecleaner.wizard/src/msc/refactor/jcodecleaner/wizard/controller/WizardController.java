@@ -1,9 +1,9 @@
-package msc.refactor.codecleaner.wizard.controller;
+package msc.refactor.jcodecleaner.wizard.controller;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import msc.refactor.codecleaner.wizard.model.WizardModel;
+import msc.refactor.jcodecleaner.wizard.model.WizardModel;
 
 public class WizardController {
 

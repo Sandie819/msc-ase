@@ -1,6 +1,6 @@
-package msc.refactor.codecleaner.wizard.view.pages;
+package msc.refactor.jcodecleaner.wizard.view.pages;
 
-import msc.refactor.codecleaner.wizard.controller.WizardController;
+import msc.refactor.jcodecleaner.wizard.controller.WizardController;
 
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;

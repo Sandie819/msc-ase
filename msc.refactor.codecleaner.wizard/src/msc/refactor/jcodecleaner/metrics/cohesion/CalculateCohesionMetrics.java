@@ -1,4 +1,4 @@
-package msc.refactor.codecleaner.metrics.cohesion;
+package msc.refactor.jcodecleaner.metrics.cohesion;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;

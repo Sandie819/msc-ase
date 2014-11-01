@@ -3,29 +3,27 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Wizard
 Bundle-SymbolicName: msc.refactor.codecleaner.wizard;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: msc.refactor.codecleaner.wizard.Activator
+Bundle-Activator: msc.refactor.jcodecleaner.wizard.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui.ide,
  org.eclipse.core.resources,
- org.eclipse.jdt.ui;bundle-version="3.10.0",
- org.eclipse.jdt.core;bundle-version="3.10.0",
- org.eclipse.ui.navigator;bundle-version="3.5.400",
- org.eclipse.jface.text;bundle-version="3.9.0",
- org.eclipse.ui.workbench.texteditor;bundle-version="3.9.0",
- org.eclipse.ui.editors;bundle-version="3.8.200",
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core,
+ org.eclipse.ui.navigator,
+ org.eclipse.jface.text,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.editors,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.jdt.core.manipulation,
  org.eclipse.ltk.ui.refactoring;bundle-version="3.7.100",
- javaparser;bundle-version="1.0.0",
- org.eclipse.draw2d,
- gr.uom.java.jdeodorant;bundle-version="5.0.20"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ gr.uom.java.jdeodorant
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: msc.refactor.codecleaner.metrics.cohesion,
- msc.refactor.codecleaner.multiplerefactoring,
- msc.refactor.codecleaner.wizard,
- msc.refactor.codecleaner.wizard.controller,
- msc.refactor.codecleaner.wizard.model,
- msc.refactor.codecleaner.wizard.view,
- msc.refactor.codecleaner.wizard.view.pages
+Export-Package: msc.refactor.jcodecleaner.metrics.cohesion,
+ msc.refactor.jcodecleaner.multiplerefactoring,
+ msc.refactor.jcodecleaner.wizard,
+ msc.refactor.jcodecleaner.wizard.controller,
+ msc.refactor.jcodecleaner.wizard.model,
+ msc.refactor.jcodecleaner.wizard.view,
+ msc.refactor.jcodecleaner.wizard.view.pages

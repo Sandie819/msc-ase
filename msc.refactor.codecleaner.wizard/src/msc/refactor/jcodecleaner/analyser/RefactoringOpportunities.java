@@ -1,4 +1,4 @@
-package msc.refactor.codecleaner.wizard.model;
+package msc.refactor.jcodecleaner.analyser;
 
 import gr.uom.java.distance.ExtractClassCandidateGroup;
 import gr.uom.java.distance.MoveMethodCandidateRefactoring;

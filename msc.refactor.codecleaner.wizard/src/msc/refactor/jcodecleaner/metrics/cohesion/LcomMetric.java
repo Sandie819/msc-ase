@@ -1,4 +1,4 @@
-package msc.refactor.codecleaner.metrics.cohesion;
+package msc.refactor.jcodecleaner.metrics.cohesion;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -154,4 +154,5 @@ public class LcomMetric  {
 		}
 		return METHOD_HAS_REF;
 	}
+	
 }

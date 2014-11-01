@@ -33,7 +33,7 @@
         <action
         	label="Code Cleaning Wizard"
             icon="icons/wizard-icon.gif"
-            class="msc.refactor.codecleaner.wizard.controller.WizardAction"
+            class="msc.refactor.jcodecleaner.wizard.controller.WizardAction"
             id="wizard.action1"            
             enablesFor="*"            
             menubarPath="org.eclipse.jdt.ui.refactoring.menu/msc.refactor.codecleaner.menu/group">            

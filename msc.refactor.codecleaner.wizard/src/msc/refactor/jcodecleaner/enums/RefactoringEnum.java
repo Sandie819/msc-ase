@@ -1,4 +1,4 @@
-package msc.refactor.codecleaner.multiplerefactoring;
+package msc.refactor.jcodecleaner.enums;
 
 public enum RefactoringEnum {
 

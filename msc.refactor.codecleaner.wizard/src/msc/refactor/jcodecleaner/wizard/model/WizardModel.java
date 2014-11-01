@@ -1,4 +1,6 @@
-package msc.refactor.codecleaner.wizard.model;
+package msc.refactor.jcodecleaner.wizard.model;
+
+import msc.refactor.jcodecleaner.analyser.RefactoringOpportunities;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;

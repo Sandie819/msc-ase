@@ -1,4 +1,4 @@
-package msc.refactor.codecleaner.multiplerefactoring;
+package msc.refactor.jcodecleaner.multiplerefactoring;
 
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
@@ -6,8 +6,8 @@ import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractMethodRefactoring;
 
 import java.util.Set;
 
-import msc.refactor.codecleaner.wizard.controller.WizardController;
-import msc.refactor.codecleaner.wizard.model.RefactoringOpportunities;
+import msc.refactor.jcodecleaner.analyser.RefactoringOpportunities;
+import msc.refactor.jcodecleaner.wizard.controller.WizardController;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;

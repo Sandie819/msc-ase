@@ -1,4 +1,4 @@
-package msc.refactor.codecleaner.multiplerefactoring;
+package msc.refactor.jcodecleaner.multiplerefactoring;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class MultipleRefactoring extends Refactoring {
 
 	public MultipleRefactoring() {		
 		super();		
-		refactoringsToBeDone = new ArrayList<>();
+		refactoringsToBeDone = new ArrayList<Refactoring>();
 	}
 
 	@Override

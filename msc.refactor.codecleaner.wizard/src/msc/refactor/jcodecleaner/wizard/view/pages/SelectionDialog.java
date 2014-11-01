@@ -1,6 +1,6 @@
-package msc.refactor.codecleaner.wizard.view.pages;
+package msc.refactor.jcodecleaner.wizard.view.pages;
 
-import msc.refactor.codecleaner.wizard.controller.WizardController;
+import msc.refactor.jcodecleaner.wizard.controller.WizardController;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
 /**
- * @author Sandra Mulligan
+ * @author mulligans
  *
  */
 public class SelectionDialog extends ElementTreeSelectionDialog implements ISelectionChangedListener {

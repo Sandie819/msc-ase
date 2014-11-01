@@ -1,8 +1,8 @@
-package msc.refactor.codecleaner.wizard.controller;
+package msc.refactor.jcodecleaner.wizard.controller;
 
-import msc.refactor.codecleaner.multiplerefactoring.MultipleRefactoring;
-import msc.refactor.codecleaner.wizard.model.WizardModel;
-import msc.refactor.codecleaner.wizard.view.MultipleRefactorWizard;
+import msc.refactor.jcodecleaner.multiplerefactoring.MultipleRefactoring;
+import msc.refactor.jcodecleaner.wizard.model.WizardModel;
+import msc.refactor.jcodecleaner.wizard.view.MultipleRefactorWizard;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.action.IAction;
