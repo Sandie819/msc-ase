@@ -1,15 +1,22 @@
 Project Progress
 
-- Plugin 
+1. Plugin 
 	- Built wizard style approach (DONE)
-- Go Button that applies a random refactoring 
+2. Go Button that applies a random refactoring 
 	- "Apply Random Refactoring" button (DONE)
 	- When clicked renames first method in class (DONE)
-- Apply Sequence of random refactorings
+3. Apply Sequence of random refactorings
 	- Rename refactorings (method) (DONE)
 	- Clean class - organise imports, remove unused methods, variables etc (In Progress)
 	- Another series of refactorings to include logical organisation of code in the class
-- Add metrics (or some kind of fitness function) (In Progress)
-- Code smell detection
-	- Incorporate FindBugs Plugin
-- Merge workings together new plugin, refactorings, metrics & findBugs
+4. Add metrics (In Progress) 
+	- Cohesion Metrics: LCOM2 & LCOM3 (Done)
+	- Other Cohesion Metrics (In Progress)
+	- Combining Metrics to create a Fitness Function (In Progress)
+5. User page to select refactorings based on analysis of code (using metrics, fitness function from point 4 above)
+6. Code smell detection
+	- Incorporate FindBugs Plugin?? Now looking at JDeodorant
+
+
+** Now making use of JDeodorant for identifying refactoring opportunities within project
+** Also looked at sourceforge.Metrics plugin, JDepend and a few others
