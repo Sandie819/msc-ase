@@ -51,13 +51,9 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 		container.addPageChangingListener(new IPageChangingListener() {
 			@Override
 			public void handlePageChanging(PageChangingEvent event) {
-				
-				if(event.getCurrentPage() instanceof MainSelectorPage) {
-					
-					
-				}   
+		
 				if(event.getTargetPage() instanceof RefactoringOptionsPage) {
-					
+					//Reset Model, compilation unit etc
 					analyser = new Analyser();
 					List<RefactoringEnum> refactoringsForSuggestion = analyser.analyseSelection(controller);
 					refactoringOptionsPage.findAndSetRefactoringOpportunities(refactoringsForSuggestion);

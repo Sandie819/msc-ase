@@ -1,4 +1,4 @@
-package msc.refactor.jcodecleaner.analyser;
+package msc.refactor.jcodecleaner.wizard.model;
 
 import gr.uom.java.distance.ExtractClassCandidateGroup;
 import gr.uom.java.distance.MoveMethodCandidateRefactoring;
@@ -12,7 +12,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 
-public class RefactoringOpportunities {
+public class RefactoringOpportunitiesModel {
 
 	private Set<ASTSliceGroup> extractMethodOpportunities;
 	private Set<ExtractClassCandidateGroup> extractClassOpportunities;

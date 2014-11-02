@@ -1,13 +1,17 @@
 package msc.refactor.jcodecleaner.multiplerefactoring;
 
+import gr.uom.java.distance.ExtractClassCandidateGroup;
+import gr.uom.java.distance.ExtractClassCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
+import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractClassRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractMethodRefactoring;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import msc.refactor.jcodecleaner.analyser.RefactoringOpportunities;
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
+import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,7 +33,7 @@ public class RefactoringBuilder {
 		IFile file = controller.getModel().getFileFromStructuredSelection();
 		ICompilationUnit iCompilationUnit = JavaCore.createCompilationUnitFrom(file);
 
-		RefactoringOpportunities opportunitites = controller.getModel()
+		RefactoringOpportunitiesModel opportunitites = controller.getModel()
 				.getRefactoringOpportunities();
 		
 		Set<ASTSliceGroup> extractMethodOpportunities = opportunitites
@@ -50,6 +54,41 @@ public class RefactoringBuilder {
 		}
 		return extractMethodRefactoring;
 	}
+	
+	/**
+	 * @param compilationUnit
+	 */
+	public Set<ExtractClassRefactoring> getExtractedClassRefactoring(WizardController controller) {
+		Set<ExtractClassRefactoring> extractClassRefactorings = new HashSet<ExtractClassRefactoring>();
+	
+		RefactoringOpportunitiesModel opportunitites = controller.getModel()
+				.getRefactoringOpportunities();
+		
+		Set<ExtractClassCandidateGroup> extractClassOpportunities = opportunitites
+				.getExtractClassOpportunities();
+
+		for (ExtractClassCandidateGroup candidateGroup : extractClassOpportunities) {
+			
+			for (ExtractClassCandidateRefactoring candidateRefactoring : candidateGroup.getCandidates()) {
+				IFile file = controller.getModel().getFileFromStructuredSelection();
+				
+				IProgressMonitor monitor = new NullProgressMonitor();
+				CompilationUnit compilationUnit = parse(monitor,
+						JavaCore.createCompilationUnitFrom(file));
+				
+				ExtractClassRefactoring extractClassRefactoring = new ExtractClassRefactoring(
+						file, compilationUnit, candidateRefactoring.getSourceClassTypeDeclaration(), 
+						candidateRefactoring.getExtractedFieldFragments(), 
+						candidateRefactoring.getExtractedMethods(), candidateRefactoring.getDelegateMethods(), 
+						candidateRefactoring.getTargetClassName());
+				
+				extractClassRefactorings.add(extractClassRefactoring);
+
+			}
+		}
+		return extractClassRefactorings;
+	}
+
 
 	/**
 	 * Parse ICompilationUnit

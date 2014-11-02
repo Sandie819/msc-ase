@@ -8,32 +8,36 @@ import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractMethodRefactoring;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import msc.refactor.jcodecleaner.analyser.RefactoringOpportunities;
 import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 import msc.refactor.jcodecleaner.multiplerefactoring.MultipleRefactoring;
 import msc.refactor.jcodecleaner.multiplerefactoring.RefactoringBuilder;
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
+import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
-import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
+
+import swing2swt.layout.BoxLayout;
+import swing2swt.layout.FlowLayout;
 
 /**
  * @author mulligans
@@ -41,13 +45,20 @@ import org.eclipse.swt.widgets.Label;
  */
 public class RefactoringOptionsPage extends UserInputWizardPage {
 
-	private List<RefactoringEnum> refactorings;
+	private Set<RefactoringEnum> refactorings;
 	private Composite composite;
 	private WizardController controller;
 	private Map<Button, RefactoringEnum> refactoringCheckboxMap;
-	private List<Refactoring> selectedRefactorings;
 	private RefactoringBuilder refactoringBuilder;
 	private MultipleRefactoring multipleRefactoring;
+	
+	private Text lcomText;
+	private Text text_2;
+	private Text text_3;
+	private Text text_4;
+	private Text text;
+	private Group refactoringOptionsGroup;
+	private Label lblNewLabel;
 	
 	public RefactoringOptionsPage(WizardController controller, MultipleRefactoring multipleRefactoring) {
 		super("Refactoring options");
@@ -55,9 +66,8 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		this.multipleRefactoring = multipleRefactoring;
 		
 		refactoringCheckboxMap = new HashMap<Button, RefactoringEnum>();
-		selectedRefactorings = new ArrayList<Refactoring>();
 		refactoringBuilder = new RefactoringBuilder();
-		
+		refactorings = new HashSet<RefactoringEnum>();
 
 	}
 
@@ -65,28 +75,60 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	public void createControl(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
 		
-		 // create a new label that will span two columns
-	    Label refactorOppsLabel = new Label(composite, SWT.BORDER);
-	    refactorOppsLabel.setText("Available Refactorings: "); 
-	    
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
+		composite.setLayout(new GridLayout(1, true));		
 		
-		composite.setLayout(gridLayout);
+		refactoringOptionsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+		refactoringOptionsGroup.setText("Refactoring Options Available");
+		refactoringOptionsGroup.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		refactoringOptionsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+		new Label(refactoringOptionsGroup, SWT.NONE);	
+
+		Group metricResultsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+		metricResultsGroup.setText("Metric Results");			
+		metricResultsGroup.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+		new Label(metricResultsGroup, SWT.NONE);
+				
+		Label lblLcom = new Label(metricResultsGroup, SWT.NONE);	
+		lblLcom.setText("LCOM:");		
+		lcomText = new Text(metricResultsGroup, SWT.BORDER);
+	
+		Label lblM = new Label(metricResultsGroup, SWT.NONE);
+		lblM.setText("M2");		
+		text_2 = new Text(metricResultsGroup, SWT.BORDER);
+
+		
+		Label lblM_1 = new Label(metricResultsGroup, SWT.NONE);
+		lblM_1.setText("M3");		
+		text_3 = new Text(metricResultsGroup, SWT.BORDER);
+		
+		Label lblM_2 = new Label(metricResultsGroup, SWT.NONE);
+		lblM_2.setText("M4");		
+		text_4 = new Text(metricResultsGroup, SWT.BORDER);
+		
+		Group fitnessFunctionGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+		fitnessFunctionGroup.setText("Overall Fitness Function");
+		fitnessFunctionGroup.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		fitnessFunctionGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
+		lblNewLabel = new Label(fitnessFunctionGroup, SWT.NONE);
+		lblNewLabel.setText("Calculated Fitness functions");		
+		text = new Text(fitnessFunctionGroup, SWT.BORDER);
+		Label lblHint = new Label(fitnessFunctionGroup, SWT.NONE);
+		lblHint.setText("(Based on various metrics)");		
 				
 		setControl(composite);
 	}
 	
 	public void onEnterPage(){
 		for(RefactoringEnum refactor: refactorings) {
-			Button checkBox = new Button(composite, SWT.CHECK);
-			checkBox.setText(refactor.getRefactoringName());
+			Button checkBox = new Button(refactoringOptionsGroup, SWT.CHECK);
+			checkBox.setText(refactor.getRefactoringName());			
 			refactoringCheckboxMap.put(checkBox, refactor);	 
 			
 			addCheckBoxListener(checkBox);
 		}
-		composite.pack();
-		//setControl(composite);
+		composite.pack(false);
 	}
 
 	/**
@@ -110,20 +152,22 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		            if(refactor==RefactoringEnum.EXTRACT_METHOD) {
 						ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
 						multipleRefactoring.addRefactoringsToBeDone(extractMethodRefactoring);
-//						selectedRefactorings.add(extractMethodRefactoring);
+//						
 					} else if(refactor==RefactoringEnum.EXTRACT_CLASS) {
-//						selectedRefactorings.add(new ExtractClassRefactoring(sourceFile, sourceCompilationUnit, 
-//								sourceTypeDeclaration, extractedFieldFragments, extractedMethods, 
-//								delegateMethods, extractedTypeName);
+						multipleRefactoring.addRefactoringsToBeDone(refactoringBuilder.getExtractedClassRefactoring(controller).iterator().next());
+//						for(ExtractClassRefactoring newRefactoring : refactoringBuilder.getExtractedClassRefactoring(controller)){
+//							multipleRefactoring.addRefactoringsToBeDone(newRefactoring);	
+//						}												
+						
 					} else if(refactor==RefactoringEnum.MOVE_METHOD) {
 //						selectedRefactorings.add(new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit, 
 //								sourceTypeDeclaration, targetTypeDeclaration, sourceMethod, 
 //								additionalMethodsToBeMoved, leaveDelegate, movedMethodName);
 					}
 		            
-		            OrganizeImportsAction organiseImports = new OrganizeImportsAction(controller.getModel().getPart().getSite());
-		            //organiseImports.
-		            organiseImports.run(controller.getModel().getSelection());
+//		            OrganizeImportsAction organiseImports = new OrganizeImportsAction(controller.getModel().getPart().getSite());
+//		            //organiseImports.
+//		            organiseImports.run(controller.getModel().getSelection());
 		            
 		        } else {
 		        	if(noCheckBoxSelected()) {
@@ -144,42 +188,16 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		});
 	}
 
-	public List<RefactoringEnum> getRefactorings() {
+	public Set<RefactoringEnum> getRefactorings() {
 		return refactorings;
 	}
 
-	public void setRefactorings(List<RefactoringEnum> refactorings) {
+	public void setRefactorings(Set<RefactoringEnum> refactorings) {
 		this.refactorings = refactorings;
-	}
-	
-	public List<Refactoring> getSelectedRefactorings(){
-		//List<Refactoring> selectedRefactorings = new ArrayList<Refactoring>();
-		
-		
-//		for(RefactoringEnum refactor: refactoringCheckboxMap.keySet()){
-//			if(refactoringCheckboxMap.get(refactor).getSelection()) {
-//				
-//				if(refactor==RefactoringEnum.EXTRACT_METHOD) {
-//					ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
-//					selectedRefactorings.add(extractMethodRefactoring);
-//				} else if(refactor==RefactoringEnum.EXTRACT_CLASS) {
-////					selectedRefactorings.add(new ExtractClassRefactoring(sourceFile, sourceCompilationUnit, 
-////							sourceTypeDeclaration, extractedFieldFragments, extractedMethods, 
-////							delegateMethods, extractedTypeName);
-//				} else if(refactor==RefactoringEnum.MOVE_METHOD) {
-////					selectedRefactorings.add(new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit, 
-////							sourceTypeDeclaration, targetTypeDeclaration, sourceMethod, 
-////							additionalMethodsToBeMoved, leaveDelegate, movedMethodName);
-//				}
-//				
-//			}
-//		}
-		
-		return selectedRefactorings;
 	}
 
 	public void findAndSetRefactoringOpportunities(List<RefactoringEnum> refactoringsForSuggestion) {
-		RefactoringOpportunities refactoringOpportunities = new RefactoringOpportunities();
+		RefactoringOpportunitiesModel refactoringOpportunities = new RefactoringOpportunitiesModel();
 		
 		IFile file = controller.getModel().getFileFromStructuredSelection();
 		IJavaProject project = JavaCore.createCompilationUnitFrom(file).getJavaProject();
@@ -187,7 +205,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		for(RefactoringEnum suggestedRefactoring: refactoringsForSuggestion){
 			
 			if(suggestedRefactoring==RefactoringEnum.EXTRACT_CLASS) {
-				Set<ExtractClassCandidateGroup> extractedClassCandidates = Standalone.getExtractClassRefactoringOpportunities(project);
+				Set<ExtractClassCandidateGroup> extractedClassCandidates = Standalone.getExtractClassRefactoringOpportunitiesForClass(project, file);
 				
 				for(ExtractClassCandidateGroup candidateGroup: extractedClassCandidates){
 					for(ExtractClassCandidateRefactoring candidate : candidateGroup.getCandidates()) {
@@ -200,7 +218,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 			}
 			
 			if(suggestedRefactoring==RefactoringEnum.EXTRACT_METHOD) {
-				Set<ASTSliceGroup> extractMethodOpportunities = Standalone.getExtractMethodRefactoringOpportunities(project);
+				Set<ASTSliceGroup> extractMethodOpportunities = Standalone.getExtractMethodRefactoringOpportunitiesForClass(project, file);
 				
 				for(ASTSliceGroup sliceGroup: extractMethodOpportunities){
 					for(ASTSlice slice : sliceGroup.getCandidates()) {

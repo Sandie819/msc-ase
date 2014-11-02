@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Wizard
-Bundle-SymbolicName: msc.refactor.codecleaner.wizard;singleton:=true
+Bundle-SymbolicName: msc.refactor.jcodecleaner.wizard;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: msc.refactor.jcodecleaner.wizard.Activator
 Require-Bundle: org.eclipse.ui,
@@ -20,10 +20,12 @@ Require-Bundle: org.eclipse.ui,
  gr.uom.java.jdeodorant
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: msc.refactor.jcodecleaner.metrics.cohesion,
+Export-Package: msc.refactor.jcodecleaner.metrics,
  msc.refactor.jcodecleaner.multiplerefactoring,
  msc.refactor.jcodecleaner.wizard,
  msc.refactor.jcodecleaner.wizard.controller,
  msc.refactor.jcodecleaner.wizard.model,
  msc.refactor.jcodecleaner.wizard.view,
  msc.refactor.jcodecleaner.wizard.view.pages
+Bundle-ClassPath: .,
+ swing2swt.jar

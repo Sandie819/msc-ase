@@ -1,7 +1,5 @@
 package msc.refactor.jcodecleaner.wizard.model;
 
-import msc.refactor.jcodecleaner.analyser.RefactoringOpportunities;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
@@ -16,7 +14,7 @@ public class WizardModel {
 	private ISelection selection;
 	private IWorkbenchWindow window;
 	private IStructuredSelection structuredSelection;
-	private RefactoringOpportunities refactoringOpportunities;
+	private RefactoringOpportunitiesModel refactoringOpportunities;
 	
 	public IWorkbenchPart getPart() {
 		return part;
@@ -44,11 +42,11 @@ public class WizardModel {
 		this.structuredSelection = structuredSelection;
 	}
 	
-	public RefactoringOpportunities getRefactoringOpportunities() {
+	public RefactoringOpportunitiesModel getRefactoringOpportunities() {
 		return refactoringOpportunities;
 	}
 	public void setRefactoringOpportunities(
-			RefactoringOpportunities refactoringOpportunities) {
+			RefactoringOpportunitiesModel refactoringOpportunities) {
 		this.refactoringOpportunities = refactoringOpportunities;
 	}
 	public IFile getFileFromStructuredSelection() {		 

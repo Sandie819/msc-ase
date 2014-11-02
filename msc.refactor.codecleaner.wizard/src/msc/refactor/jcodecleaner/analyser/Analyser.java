@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import msc.refactor.jcodecleaner.enums.RefactoringEnum;
-import msc.refactor.jcodecleaner.metrics.cohesion.LcomMetric;
+import msc.refactor.jcodecleaner.metrics.LcomMetric;
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
 
 import org.eclipse.core.resources.IFile;

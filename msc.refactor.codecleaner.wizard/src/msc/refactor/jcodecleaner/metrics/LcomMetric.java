@@ -1,4 +1,4 @@
-package msc.refactor.jcodecleaner.metrics.cohesion;
+package msc.refactor.jcodecleaner.metrics;
 
 import java.util.HashMap;
 import java.util.HashSet;

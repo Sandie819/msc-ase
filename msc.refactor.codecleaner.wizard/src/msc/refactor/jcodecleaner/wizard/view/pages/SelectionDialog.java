@@ -7,16 +7,19 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 
 /**
  * @author mulligans
@@ -40,7 +43,7 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 			ITreeContentProvider contentProvider, 
 			UserInputWizardPage callingPage) {
 
-		super(controller.getModel().getWindow().getShell(), new LabelProvider(), 
+		super(controller.getModel().getWindow().getShell(), (ILabelProvider) labelProvider, 
 				contentProvider);
 		setInput(ResourcesPlugin.getWorkspace().getRoot());
 		this.controller = controller;
@@ -51,6 +54,9 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 	public Control createDialogArea(Composite parent) {
 		Composite result= (Composite)super.createDialogArea(parent);
 
+		JavaFileFilter javaFilter = new JavaFileFilter();
+		getTreeViewer().addFilter(javaFilter);
+		
 		getTreeViewer().addSelectionChangedListener(this);
 		applyDialogFont(result);
 
