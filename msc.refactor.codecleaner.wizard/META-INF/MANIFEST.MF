@@ -17,10 +17,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.jdt.core.manipulation,
  org.eclipse.ltk.ui.refactoring;bundle-version="3.7.100",
- gr.uom.java.jdeodorant
+ org.eclipse.jface
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: msc.refactor.jcodecleaner.metrics,
+Export-Package: msc.refactor.jcodecleaner.analyser.metrics,
  msc.refactor.jcodecleaner.multiplerefactoring,
  msc.refactor.jcodecleaner.wizard,
  msc.refactor.jcodecleaner.wizard.controller,
@@ -28,4 +28,5 @@ Export-Package: msc.refactor.jcodecleaner.metrics,
  msc.refactor.jcodecleaner.wizard.view,
  msc.refactor.jcodecleaner.wizard.view.pages
 Bundle-ClassPath: .,
- swing2swt.jar
+ gr.uom.java.jdeodorant_5.0.22.jar,
+ library.jar

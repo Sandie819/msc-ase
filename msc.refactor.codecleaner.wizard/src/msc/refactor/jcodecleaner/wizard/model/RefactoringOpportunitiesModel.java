@@ -5,8 +5,13 @@ import gr.uom.java.distance.MoveMethodCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+
+import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaElement;
@@ -16,7 +21,16 @@ public class RefactoringOpportunitiesModel {
 
 	private Set<ASTSliceGroup> extractMethodOpportunities;
 	private Set<ExtractClassCandidateGroup> extractClassOpportunities;
-	private List<MoveMethodCandidateRefactoring> moveMethodOpportunities;
+	private List<MoveMethodCandidateRefactoring> moveMethodOpportunities;	
+	private Set<RefactoringEnum> availableRefactorings;
+	
+	public RefactoringOpportunitiesModel(){
+		extractMethodOpportunities = new TreeSet<ASTSliceGroup>();
+		extractClassOpportunities = new TreeSet<ExtractClassCandidateGroup>();
+		moveMethodOpportunities = new ArrayList<MoveMethodCandidateRefactoring>();
+		availableRefactorings = new TreeSet<RefactoringEnum>();		
+	}
+	
 	
 	public Set<ASTSliceGroup> getExtractMethodOpportunities() {
 		return extractMethodOpportunities;
@@ -39,6 +53,14 @@ public class RefactoringOpportunitiesModel {
 			List<MoveMethodCandidateRefactoring> moveMethodOpportunities) {
 		this.moveMethodOpportunities = moveMethodOpportunities;
 	}
+		
+	
+	public Set<RefactoringEnum> getAvailableRefactorings() {
+		return availableRefactorings;
+	}
+	public void setAvailableRefactorings(Set<RefactoringEnum> availableRefactorings) {
+		this.availableRefactorings = availableRefactorings;
+	}
 	
 	public boolean isExtractMethodAvailable(IFile file){
 		IJavaElement sourceJavaElement = JavaCore.create(file);
@@ -53,6 +75,13 @@ public class RefactoringOpportunitiesModel {
 			}
 		}
 		return false;
+	}
+	
+	public void addRefactoringOption(RefactoringEnum availableRefactoring) {
+		if(availableRefactorings==null){
+			availableRefactorings = new HashSet<RefactoringEnum>();
+		}
+		availableRefactorings.add(availableRefactoring);
 	}
 	
 }

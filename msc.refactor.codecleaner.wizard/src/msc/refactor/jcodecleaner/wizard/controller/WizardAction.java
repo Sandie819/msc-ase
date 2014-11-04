@@ -22,7 +22,7 @@ public class WizardAction implements IWorkbenchWindowActionDelegate {
 
 	@Override
 	public void run(IAction action) {
-		startWizard(new MultipleRefactorWizard(controller, createMultipleRefactoring()));
+		startWizard(new MultipleRefactorWizard(controller, createMultipleRefactoring(), false));
 	}
 
 	private MultipleRefactoring createMultipleRefactoring() {
@@ -32,7 +32,7 @@ public class WizardAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void startWizard(RefactoringWizard wizard) {
-		try {
+		try {			
 			Shell shell= PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 			RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(
 					wizard);

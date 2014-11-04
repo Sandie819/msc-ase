@@ -14,12 +14,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.dialogs.FilteredTree;
-import org.eclipse.ui.dialogs.PatternFilter;
 
 /**
  * @author mulligans
@@ -29,6 +26,7 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 
 	private WizardController controller;	
 	private UserInputWizardPage callingPage;
+	private boolean setFileSelected;
 
 	/**
 	 * Selection Dialog constructor
@@ -41,13 +39,15 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 	public SelectionDialog(WizardController controller,
 			IBaseLabelProvider labelProvider,
 			ITreeContentProvider contentProvider, 
-			UserInputWizardPage callingPage) {
+			UserInputWizardPage callingPage,
+			boolean setFileSelected) {
 
 		super(controller.getModel().getWindow().getShell(), (ILabelProvider) labelProvider, 
 				contentProvider);
 		setInput(ResourcesPlugin.getWorkspace().getRoot());
 		this.controller = controller;
 		this.callingPage = callingPage;
+		this.setFileSelected = setFileSelected;
 	}
 
 	@Override
@@ -56,15 +56,19 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 
 		JavaFileFilter javaFilter = new JavaFileFilter();
 		getTreeViewer().addFilter(javaFilter);
-		
-		getTreeViewer().addSelectionChangedListener(this);
-		applyDialogFont(result);
 
+		getTreeViewer().addSelectionChangedListener(this);
+		
+		if(setFileSelected) {
+			getTreeViewer().setSelection(controller.getModel().getStructuredSelection(), true);
+			getTreeViewer().refresh();
+		}
+		//applyDialogFont(result);
 		//PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IJavaHelpContextIds.BP_SELECT_DEFAULT_OUTPUT_FOLDER_DIALOG);
 
 		return result;
 	}
-	
+
 	@Override
 	public void selectionChanged(SelectionChangedEvent event) {
 		ISelection selection = event.getSelection();
@@ -74,6 +78,7 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 		if(selection!=null) {
 			if (selection instanceof IStructuredSelection) {
 				structuredSelection = (IStructuredSelection) selection;
+				
 				Object element = structuredSelection.getFirstElement();
 				IFile file = (IFile) Platform.getAdapterManager().getAdapter(element, IFile.class);
 				if (file != null) {

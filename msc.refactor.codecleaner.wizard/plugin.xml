@@ -6,8 +6,8 @@
          point="org.eclipse.ui.actionSets">
       <actionSet
             description="Refactoring Actions"
-            id="msc.refactor.codecleaner.wizard.popup1"
-            label="CodeCleaner"
+            id="msc.refactor.jcodecleaner.wizard.popup1"
+            label="JCodeCleaner"
             visible="true">
          <menu
                label="Refactor"
@@ -21,60 +21,26 @@
             <separator name="typeGroup2"/>
             <separator name="codingGroup2"/>
             <separator name="typeGroup3"/>
-            <separator name="codeCleanerGroup"/>
+            <separator name="jcodeCleanerGroup"/>
             <separator name="scriptGroup"/>
         </menu>
       <menu
-               id="msc.refactor.codecleaner.menu"
-               label="Code Cleaner"
-               path="org.eclipse.jdt.ui.refactoring.menu/codeCleanerGroup">
+               id="msc.refactor.jcodecleaner.menu"
+               label="JCodeCleaner"
+               path="org.eclipse.jdt.ui.refactoring.menu/jcodeCleanerGroup">
             <separator name="group" />    
      </menu>
         <action
-        	label="Code Cleaning Wizard"
+        	label="JCodeCleaning Wizard"
             icon="icons/wizard-icon.gif"
             class="msc.refactor.jcodecleaner.wizard.controller.WizardAction"
             id="wizard.action1"            
             enablesFor="*"            
-            menubarPath="org.eclipse.jdt.ui.refactoring.menu/msc.refactor.codecleaner.menu/group">            
+            menubarPath="org.eclipse.jdt.ui.refactoring.menu/msc.refactor.jcodecleaner.menu/group">            
       </action>       
       <!-- More actions -->
       
     </actionSet>
  </extension>
- 
-<!--<extension
-      id="wizard"
-      name="Clean Code"
-      point="org.eclipse.ui.newWizards">
-   <category
-         name="Code Cleaner Wizard"
-         id="wizard.category1">
-   </category>
-   <wizard
-         name="Code Cleaner"
-         icon="icons/wizard.gif"
-         category="wizard.category1"
-         class="msc.refactor.codecleaner.wizard.view.CodeCleanerWizard"
-         id="wizard.wizard1">
-      <description>
-      	Code Cleaner 
-      </description>
-   </wizard>
-</extension>-->
-
-<!--<extension
-      point="org.eclipse.ui.popupMenus">
-   <objectContribution
-         objectClass="org.eclipse.core.resources.IFile"
-         id="msc.refactor.codecleaner.wizard.popup1">
-      <action
-            label="Code Cleaner"
-            icon="icons/action.gif"
-            class="msc.refactor.codecleaner.wizard.controller.WizardAction"
-            id="wizard.action1">
-      </action>
-   </objectContribution>
-</extension>-->
 
 </plugin>

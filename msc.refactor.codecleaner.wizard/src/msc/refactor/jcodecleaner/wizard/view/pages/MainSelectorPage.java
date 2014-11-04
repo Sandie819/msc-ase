@@ -17,10 +17,13 @@ public class MainSelectorPage extends UserInputWizardPage {
 
 	private Composite mainComposite;
 	private WizardController controller;
+	private boolean setFileSelected;
 
-	public MainSelectorPage(WizardController controller) {
+	public MainSelectorPage(WizardController controller, boolean setFileSelected) {
 		super("Rigorous refactor selector");
+		setMessage("Select a class to refactor");
 		this.controller = controller;		
+		this.setFileSelected = setFileSelected;
 	}
 
 	@Override
@@ -33,7 +36,7 @@ public class MainSelectorPage extends UserInputWizardPage {
 
 		SelectionDialog selector = new SelectionDialog(controller, 
 				new WorkbenchLabelProvider(), 
-				new BaseWorkbenchContentProvider(), this);
+				new BaseWorkbenchContentProvider(), this, setFileSelected);
 		
 		setPageComplete(false);		
 		selector.createDialogArea(mainComposite);

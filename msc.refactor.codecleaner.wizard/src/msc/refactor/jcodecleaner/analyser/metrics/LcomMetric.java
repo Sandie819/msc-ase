@@ -1,15 +1,21 @@
-package msc.refactor.jcodecleaner.metrics;
+package msc.refactor.jcodecleaner.analyser.metrics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import msc.refactor.jcodecleaner.enums.RefactoringEnum;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchConstants;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
@@ -19,55 +25,59 @@ import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 
-public class LcomMetric  {
+public class LcomMetric extends Metric  {
 
 	private Set<IMethod> methods = new HashSet<IMethod>();
 	private Set<IField> fields = new HashSet<IField>();
 	private static Map<IField, Integer> INSTANCE_VARIABLE_COUNTER;
-	
-	
+
+
 	private static Boolean METHOD_HAS_REF = null;
 
 	public LcomMetric() {
+		super("Lack of Cohesion of Methods", "LCOM", 0);
 		INSTANCE_VARIABLE_COUNTER = new HashMap<IField, Integer>();
 	}
 
-	/**
-	 * @param compilationUnit
-	 * @return
-	 * @throws JavaModelException
-	 */
-	public double calculateLCOM(ICompilationUnit compilationUnit) throws JavaModelException{		
-		buildInstanceFields(compilationUnit);
-		buildMethodsInClass(compilationUnit);
-		
-        findReferenceToInstanceFields();
-     
-        int m = methods.size();
-        int f = fields.size();
-        double mf = 0.0;
+	public double calculateMetricValue(IFile file) {
+		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
 
-        for (int i : INSTANCE_VARIABLE_COUNTER.values()) {
-        	mf += i;
-        }
+		try {
+			buildInstanceFields(compilationUnit);
+			buildMethodsInClass(compilationUnit);
+			
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		findReferenceToInstanceFields();
 
-        double sumMF = mf/INSTANCE_VARIABLE_COUNTER.size();
-		
-        double lcom2 = 0.0;
+		int m = methods.size();
+		int f = fields.size();
+		double mf = 0.0;
+
+		for (int i : INSTANCE_VARIABLE_COUNTER.values()) {
+			mf += i;
+		}
+
+		double sumMF = mf/INSTANCE_VARIABLE_COUNTER.size();
+
+		double lcom2 = 0.0;
 		if(f > 0 && m > 0) {
 			//(0 is good)
-	        //LCOM2 = 1 - sum(mf)/(m*f)
+			//LCOM2 = 1 - sum(mf)/(m*f)
 			lcom2 = 1.0 - (double)sumMF / (double)(m*f);
 			System.out.println("lcom2:" + lcom2);			
 		}
 		if(f > 0 && m > 1) {
 			//LCOM3 = (m - sum(mA)/a) / (m-1)
-	        // (1 to 2 good; 0 bad, split)
+			// (1 to 2 good; 0 bad, split)
 			double lcom3 = ((double)m - ((double)sumMF/(double)f)) / ((double)m - 1.0);
 			System.out.println("lcom3:" + lcom3);
 		}
-		
-        return lcom2;
+
+		setMetricValue(lcom2);
+		return lcom2;
 	}
 
 	/**
@@ -108,7 +118,7 @@ public class LcomMetric  {
 	 * of the class
 	 */
 	public void findReferenceToInstanceFields() {
-		
+
 		for (IField field : fields) {
 			for (IMethod method: methods) {
 				if(findSearchPattern(method, field)) {
@@ -148,11 +158,21 @@ public class LcomMetric  {
 			SearchParticipant[] searchParticipants = new SearchParticipant[] { SearchEngine
 					.getDefaultSearchParticipant() };
 			searchEngine.search(pattern, searchParticipants, scope, requestor, null);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return METHOD_HAS_REF;
 	}
-	
+
+	@Override
+	public List<RefactoringEnum> getApplicableMetricRefactorings() {		
+		List<RefactoringEnum> applicableRefactorings = new ArrayList<RefactoringEnum>();
+		
+		applicableRefactorings.add(RefactoringEnum.EXTRACT_CLASS);
+		applicableRefactorings.add(RefactoringEnum.EXTRACT_METHOD);
+		
+		return applicableRefactorings;
+	}
+
 }
