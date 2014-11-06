@@ -1,8 +1,8 @@
 package msc.refactor.jcodecleaner.wizard.view.pages;
 
+import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractClassRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractMethodRefactoring;
 
-import java.awt.FlowLayout;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +17,7 @@ import msc.refactor.jcodecleaner.wizard.controller.WizardController;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -33,7 +34,6 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * @author mulligans
- *
  */
 public class RefactoringOptionsPage extends UserInputWizardPage {
 
@@ -84,6 +84,14 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		setControl(composite);
 	}
 	
+	/**
+	 * On Entering the Re-factoring options page sets metrics, refactorings
+	 * and fitness function
+	 * 
+	 * @param metrics
+	 * @param refactorings
+	 * @param fitnessFunctionValue
+	 */
 	public void onEnterPage(List<Metric> metrics, Set<RefactoringEnum> refactorings,
 			double fitnessFunctionValue){
 		
@@ -170,47 +178,56 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 				multipleRefactoring.setfCompilationUnit(iCompilationUnit);
 				
 		        Button button = (Button) e.widget;
-		        if (button.getSelection()) {
-		            setPageComplete(true);
-		          
-		            RefactoringEnum refactor = refactoringCheckboxMap.get(button);
-		            if(refactor==RefactoringEnum.EXTRACT_METHOD) {
-						ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
-						multipleRefactoring.addRefactoringsToBeDone(extractMethodRefactoring);
-//						
-					} else if(refactor==RefactoringEnum.EXTRACT_CLASS) {
-						multipleRefactoring.addRefactoringsToBeDone(refactoringBuilder.getExtractedClassRefactoring(controller).iterator().next());
-//						for(ExtractClassRefactoring newRefactoring : refactoringBuilder.getExtractedClassRefactoring(controller)){
-//							multipleRefactoring.addRefactoringsToBeDone(newRefactoring);	
-//						}												
-						
-					} else if(refactor==RefactoringEnum.MOVE_METHOD) {
-//						selectedRefactorings.add(new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit, 
-//								sourceTypeDeclaration, targetTypeDeclaration, sourceMethod, 
-//								additionalMethodsToBeMoved, leaveDelegate, movedMethodName);
-					}
-		            
-//		            OrganizeImportsAction organiseImports = new OrganizeImportsAction(controller.getModel().getPart().getSite());
-//		            //organiseImports.
-//		            organiseImports.run(controller.getModel().getSelection());
-		            
+		        boolean selected = button.getSelection();
+		        
+		        RefactoringEnum refactor = refactoringCheckboxMap.get(button);
+		        
+		        if(!selected) {
+		        	multipleRefactoring.removeRefactoring(refactor);
 		        } else {
-		        	if(noCheckBoxSelected()) {
-		        		setPageComplete(false);
-		        		
+		        	if(refactor==RefactoringEnum.EXTRACT_METHOD) {
+		        		ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
+		        		multipleRefactoring.addRefactoringsToBeDone(extractMethodRefactoring);
+		        	} else if(refactor==RefactoringEnum.EXTRACT_CLASS) {
+		        		ExtractClassRefactoring extractClassRefactoring = refactoringBuilder.getExtractedClassRefactoring(controller).iterator().next();
+		        		if(extractClassRefactoring!=null) {
+		        			multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);	
+		        		}
+		        		//for(ExtractClassRefactoring newRefactoring : refactoringBuilder.getExtractedClassRefactoring(controller)){
+		        		//	multipleRefactoring.addRefactoringsToBeDone(newRefactoring);	
+		        		//}												
+
+		        	} else if(refactor==RefactoringEnum.MOVE_METHOD) {
+		        		// selectedRefactorings.add(new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit, 
+		        		//								sourceTypeDeclaration, targetTypeDeclaration, sourceMethod, 
+		        		//								additionalMethodsToBeMoved, leaveDelegate, movedMethodName);
 		        	}
-		        }
+
+		        }     		      
+		        setPageComplete(anyCheckBoxSelected());		  
+		        
 		    }
 
-			private boolean noCheckBoxSelected() {
-				for(Button checkBox: refactoringCheckboxMap.keySet()){
-					if(checkBox.getSelection()) {
-						return false;
-					}
-				}
-				return true;
-			}
+			
 		});
 	}
+	
+	private boolean anyCheckBoxSelected() {
+		for(Button checkBox: refactoringCheckboxMap.keySet()){
+			if(checkBox.getSelection()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public IWizardPage getPreviousPage() {
+		if(anyCheckBoxSelected()) {
+			return null;
+		} else {
+			return super.getPreviousPage();
+		}
+    }
 
 }

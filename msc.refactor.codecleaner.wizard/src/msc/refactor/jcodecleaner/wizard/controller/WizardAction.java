@@ -60,6 +60,7 @@ public class WizardAction implements IWorkbenchWindowActionDelegate {
 		model.setWindow(window);
 		model.setPart(window.getActivePage().getActivePart());
 		controller = new WizardController(model);
+		new gr.uom.java.jdeodorant.refactoring.Activator();
 	}
 
 }

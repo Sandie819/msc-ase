@@ -1,8 +1,11 @@
 package msc.refactor.jcodecleaner.multiplerefactoring;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -117,6 +120,20 @@ public class MultipleRefactoring extends Refactoring {
 
 		refactoringsToBeDone.add(refactoring);
 	}
+	
+	/** 
+	 * @param refactor
+	 */
+	public void removeRefactoring(RefactoringEnum refactor) {
+		
+		for (Iterator<Refactoring> it = refactoringsToBeDone.iterator(); it.hasNext(); ) {
+			Refactoring refactoring = it.next();
+		    if (refactoring.getClass().isAssignableFrom(refactor.getRefactoringType())) {
+		    	it.remove();
+		    }
+		}
+	}
+
 
 	public List<Change> getChanges() {
 		return changes;
@@ -165,4 +182,5 @@ public class MultipleRefactoring extends Refactoring {
 
 	}
 
+	
 }

@@ -3,7 +3,6 @@ package msc.refactor.jcodecleaner.analyser;
 import gr.uom.java.ast.Standalone;
 import gr.uom.java.distance.ExtractClassCandidateGroup;
 import gr.uom.java.distance.ExtractClassCandidateRefactoring;
-import gr.uom.java.distance.MoveMethodCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
 
@@ -19,6 +18,7 @@ import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 
@@ -103,14 +103,14 @@ public class Analyser {
 			}
 
 			if(suggestedRefactoring==RefactoringEnum.MOVE_METHOD) {
-				List<MoveMethodCandidateRefactoring> moveMethodOpportunities = Standalone.getMoveMethodRefactoringOpportunities(project);
-
-				for(MoveMethodCandidateRefactoring candidate: moveMethodOpportunities){
-					if(candidate.getSourceIFile().getFullPath().equals(file.getFullPath())){
-						refactoringOpportunities.setMoveMethodOpportunities(moveMethodOpportunities);
-						refactoringOpportunities.addRefactoringOption(RefactoringEnum.MOVE_METHOD);
-					}
-				}		
+//				List<MoveMethodCandidateRefactoring> moveMethodOpportunities = Standalone.getMoveMethodRefactoringOpportunities(project);
+//
+//				for(MoveMethodCandidateRefactoring candidate: moveMethodOpportunities){
+//					if(candidate.getSourceIFile().getFullPath().equals(file.getFullPath())){
+//						refactoringOpportunities.setMoveMethodOpportunities(moveMethodOpportunities);
+//						refactoringOpportunities.addRefactoringOption(RefactoringEnum.MOVE_METHOD);
+//					}
+//				}		
 			}
 
 		}
