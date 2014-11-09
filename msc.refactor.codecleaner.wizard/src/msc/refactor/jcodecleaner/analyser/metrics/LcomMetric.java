@@ -167,7 +167,7 @@ public class LcomMetric extends Metric  {
 
 	@Override
 	public List<RefactoringEnum> getApplicableMetricRefactorings() {		
-		List<RefactoringEnum> applicableRefactorings = new ArrayList<RefactoringEnum>();
+		applicableRefactorings = new ArrayList<RefactoringEnum>();
 		
 		applicableRefactorings.add(RefactoringEnum.EXTRACT_CLASS);
 		applicableRefactorings.add(RefactoringEnum.EXTRACT_METHOD);

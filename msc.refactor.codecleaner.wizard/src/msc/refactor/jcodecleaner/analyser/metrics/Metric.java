@@ -12,6 +12,7 @@ public abstract class Metric {
 	protected String metricFullName;
 	protected String metricShortName;
 	protected double metricValue;
+	protected List<RefactoringEnum> applicableRefactorings;
 	
 	public Metric(String metricFullName, String metricShortName, double threshold) {
 		this.threshold = threshold;

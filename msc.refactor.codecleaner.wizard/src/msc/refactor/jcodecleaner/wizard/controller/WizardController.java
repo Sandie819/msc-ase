@@ -32,4 +32,12 @@ public class WizardController {
 			changeSupport.firePropertyChange(propertyName, oldValue, newValue);
 		}
 	}
+
+	public void resetModel() {
+		model.setFitnessFunctionCalulations(null);
+		model.setRefactoringOpportunities(null);
+		model.setSelection(null);
+		model.setStructuredSelection(null);
+		model.setDeodorantActivator(new gr.uom.java.jdeodorant.refactoring.Activator());		
+	}
 }

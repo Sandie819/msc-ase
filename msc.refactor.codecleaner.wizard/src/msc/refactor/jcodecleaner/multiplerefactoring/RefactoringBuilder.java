@@ -21,6 +21,8 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class RefactoringBuilder {
 
@@ -30,7 +32,7 @@ public class RefactoringBuilder {
 	public ExtractMethodRefactoring getExtractedMethodRefactoring(WizardController controller) {
 		ExtractMethodRefactoring extractMethodRefactoring = null;
 		
-		IFile file = controller.getModel().getFileFromStructuredSelection();
+		IFile file = controller.getModel().getIFile();
 		ICompilationUnit iCompilationUnit = JavaCore.createCompilationUnitFrom(file);
 
 		RefactoringOpportunitiesModel opportunitites = controller.getModel()
@@ -70,17 +72,19 @@ public class RefactoringBuilder {
 		for (ExtractClassCandidateGroup candidateGroup : extractClassOpportunities) {
 			
 			for (ExtractClassCandidateRefactoring candidateRefactoring : candidateGroup.getCandidates()) {
-				IFile file = controller.getModel().getFileFromStructuredSelection();
+		
+				IFile sourceFile = candidateRefactoring.getSourceIFile();
+				CompilationUnit sourceCompilationUnit = (CompilationUnit)candidateRefactoring.getSourceClassTypeDeclaration().getRoot();
 				
-				IProgressMonitor monitor = new NullProgressMonitor();
-				CompilationUnit compilationUnit = parse(monitor,
-						JavaCore.createCompilationUnitFrom(file));
-				
+				String[] tokens = candidateRefactoring.getTargetClassName().split("\\.");
+				String extractedClassName = tokens[tokens.length-1];
+				Set<VariableDeclaration> extractedFieldFragments = candidateRefactoring.getExtractedFieldFragments();
+				Set<MethodDeclaration> extractedMethods = candidateRefactoring.getExtractedMethods();
 				ExtractClassRefactoring extractClassRefactoring = new ExtractClassRefactoring(
-						file, compilationUnit, candidateRefactoring.getSourceClassTypeDeclaration(), 
-						candidateRefactoring.getExtractedFieldFragments(), 
-						candidateRefactoring.getExtractedMethods(), candidateRefactoring.getDelegateMethods(), 
-						candidateRefactoring.getTargetClassName());
+						sourceFile, sourceCompilationUnit,
+						candidateRefactoring.getSourceClassTypeDeclaration(),
+						extractedFieldFragments, extractedMethods,
+						candidateRefactoring.getDelegateMethods(), extractedClassName);
 				
 				extractClassRefactorings.add(extractClassRefactoring);
 

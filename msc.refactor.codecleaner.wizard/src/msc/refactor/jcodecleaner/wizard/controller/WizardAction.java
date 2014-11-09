@@ -22,6 +22,7 @@ public class WizardAction implements IWorkbenchWindowActionDelegate {
 
 	@Override
 	public void run(IAction action) {
+		controller.resetModel();
 		startWizard(new MultipleRefactorWizard(controller, createMultipleRefactoring(), false));
 	}
 
@@ -58,9 +59,8 @@ public class WizardAction implements IWorkbenchWindowActionDelegate {
 	public void init(IWorkbenchWindow window) {
 		model = new WizardModel();
 		model.setWindow(window);
-		model.setPart(window.getActivePage().getActivePart());
+		model.setPart(window.getActivePage().getActivePart());		
 		controller = new WizardController(model);
-		new gr.uom.java.jdeodorant.refactoring.Activator();
 	}
 
 }

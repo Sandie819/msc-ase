@@ -1,5 +1,7 @@
 package msc.refactor.jcodecleaner.wizard.model;
 
+import java.util.LinkedList;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
@@ -15,6 +17,8 @@ public class WizardModel {
 	private IWorkbenchWindow window;
 	private IStructuredSelection structuredSelection;
 	private RefactoringOpportunitiesModel refactoringOpportunities;
+	private LinkedList<Double> fitnessFunctionCalulations;
+	private gr.uom.java.jdeodorant.refactoring.Activator deodorantActivator;
 	
 	public IWorkbenchPart getPart() {
 		return part;
@@ -49,7 +53,34 @@ public class WizardModel {
 			RefactoringOpportunitiesModel refactoringOpportunities) {
 		this.refactoringOpportunities = refactoringOpportunities;
 	}
-	public IFile getFileFromStructuredSelection() {		 
+	
+	public LinkedList<Double> getFitnessFunctionCalulations() {
+		return fitnessFunctionCalulations;
+	}
+	public void setFitnessFunctionCalulations(LinkedList<Double> fitnessFunctionCalulations) {
+		this.fitnessFunctionCalulations = fitnessFunctionCalulations;
+	}
+	/**
+	 * Add fitness function to the linked list (maintains insertion order)
+	 * 
+	 * @param fitnessFunction
+	 */
+	public void addFitnessFunctionCalculation(Double fitnessFunction) {
+		if(fitnessFunctionCalulations==null) {
+			fitnessFunctionCalulations = new LinkedList<Double>();
+		}
+		
+		fitnessFunctionCalulations.add(fitnessFunction);
+	}
+	
+	public gr.uom.java.jdeodorant.refactoring.Activator getDeodorantActivator() {
+		return deodorantActivator;
+	}
+	public void setDeodorantActivator(gr.uom.java.jdeodorant.refactoring.Activator deodorantActivator) {
+		this.deodorantActivator = deodorantActivator;
+	}
+	
+	public IFile getIFile() {		 
 		Object obj = structuredSelection.getFirstElement();
 		IFile file = (IFile) Platform.getAdapterManager().getAdapter(obj, IFile.class);
 		if (file != null) {

@@ -1,8 +1,6 @@
 package msc.refactor.jcodecleaner.analyser;
 
-import gr.uom.java.ast.Standalone;
 import gr.uom.java.distance.ExtractClassCandidateGroup;
-import gr.uom.java.distance.ExtractClassCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
 
@@ -18,7 +16,6 @@ import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 
@@ -58,12 +55,19 @@ public class Analyser {
 	}
 
 
-	public double calculateFitnessFunction(){
-		int fitness = metrics.size();
-		for(Metric metric: metrics){
-			if(metric.metricExceedsThreshold()){
-				fitness = fitness -1;
-			}
+	public double calculateFitnessFunction(Set<RefactoringEnum> identifiedRefactorings){
+		double fitness = 0;
+		for(Metric metric: metrics) {							
+				List<RefactoringEnum> applicableMetricRefactorings = metric.getApplicableMetricRefactorings();
+						
+				for(RefactoringEnum metricRefactoring: applicableMetricRefactorings){
+					if(identifiedRefactorings.contains(metricRefactoring)) {
+						fitness++;
+					}
+				}
+				if(metric.metricExceedsThreshold()) {
+					fitness = fitness+metric.getMetricValue();
+				}
 		}
 		
 		return fitness;
@@ -79,13 +83,10 @@ public class Analyser {
 			if(suggestedRefactoring==RefactoringEnum.EXTRACT_CLASS) {
 				Set<ExtractClassCandidateGroup> extractedClassCandidates = Standalone.getExtractClassRefactoringOpportunitiesForClass(project, file);
 
-				for(ExtractClassCandidateGroup candidateGroup: extractedClassCandidates){
-					for(ExtractClassCandidateRefactoring candidate : candidateGroup.getCandidates()) {
-						if(candidate.getSourceIFile().getFullPath().equals(file.getFullPath())){
-							refactoringOpportunities.setExtractClassOpportunities(extractedClassCandidates);							
-							refactoringOpportunities.addRefactoringOption(RefactoringEnum.EXTRACT_CLASS);							
-						}
-					}
+				if(!extractedClassCandidates.isEmpty()) {
+					refactoringOpportunities.setExtractClassOpportunities(extractedClassCandidates);							
+					refactoringOpportunities.addRefactoringOption(RefactoringEnum.EXTRACT_CLASS);							
+
 				}		
 			}
 

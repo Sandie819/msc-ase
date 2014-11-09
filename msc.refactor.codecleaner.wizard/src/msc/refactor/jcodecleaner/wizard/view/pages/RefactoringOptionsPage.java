@@ -4,6 +4,7 @@ import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractClassRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractMethodRefactoring;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -65,19 +67,16 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		
 		fitnessFunctionGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 		fitnessFunctionGroup.setText("Overall Fitness Function");
-//		fitnessFunctionGroup.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-		fitnessFunctionGroup.setLayout(new GridLayout(2, true));
+		fitnessFunctionGroup.setLayout(new GridLayout(1, true));
 		fitnessFunctionGroup.setLayoutData(new GridData(GridData.FILL_BOTH));	
 		
 		metricResultsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 		metricResultsGroup.setText("Metric Results");			
-		//metricResultsGroup.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
-		metricResultsGroup.setLayout(new GridLayout(4, true));
+		metricResultsGroup.setLayout(new GridLayout(1, true));
 		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		refactoringOptionsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 		refactoringOptionsGroup.setText("Refactoring Options Available");
-		//refactoringOptionsGroup.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		refactoringOptionsGroup.setLayout(new GridLayout(4, true));
 		refactoringOptionsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
@@ -90,12 +89,12 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	 * 
 	 * @param metrics
 	 * @param refactorings
-	 * @param fitnessFunctionValue
+	 * @param fitnessFunctionCalcs
 	 */
 	public void onEnterPage(List<Metric> metrics, Set<RefactoringEnum> refactorings,
-			double fitnessFunctionValue){
+			LinkedList<Double> fitnessFunctionCalcs){
 		
-		createFitnessFunctionPanel(fitnessFunctionValue);		
+		createFitnessFunctionPanel(fitnessFunctionCalcs);		
 		createMetricResultPanel(metrics);
 		createRefactoringOptions(refactorings);
 
@@ -103,19 +102,31 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * @param fitnessFunctionValue
+	 * @param fitnessFunctionCalcs
 	 */
-	private void createFitnessFunctionPanel(double fitnessFunctionValue) {
+	private void createFitnessFunctionPanel(LinkedList<Double> fitnessFunctionCalcs) {
 		clearGroup(fitnessFunctionGroup);
 		
 		Label fitnessLabel = new Label(fitnessFunctionGroup, SWT.NONE);
-		fitnessLabel.setText("Calculated Fitness functions");		
-		Text text = new Text(fitnessFunctionGroup, SWT.BORDER);
-		text.setText(String.valueOf(fitnessFunctionValue));
-		text.setEditable(false);
+		fitnessLabel.setText("Calculated Fitness functions");
+		
+		Group fitnessFunctionResultGroup = new Group(fitnessFunctionGroup, SWT.SHADOW_ETCHED_IN);		
+		fitnessFunctionResultGroup.setLayout(new GridLayout(4, true));
+		
+		int index = 1;
+		for(Double fitnessCalculation: fitnessFunctionCalcs) {
+			Label resultLabel = new Label(fitnessFunctionResultGroup, SWT.NONE);
+			resultLabel.setText("Phase "+index+ ": ");
+			
+			Text text = new Text(fitnessFunctionResultGroup, SWT.BORDER);
+			text.setText(String.valueOf(fitnessCalculation));
+			text.setEditable(false);
+			index++;
+		}
 		
 		Label lblHint = new Label(fitnessFunctionGroup, SWT.NONE);
-		lblHint.setText("(Based on various metrics outlined below)");		
+		lblHint.setText("Zero is optimal, above zero means there is room for improvment \n"
+				+ "Based on weighted values from the various metrics outlined below.");		
 	}
 
 	/**
@@ -126,12 +137,18 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private void createMetricResultPanel(List<Metric> metrics) {
 		clearGroup(metricResultsGroup);
 		
+		Group metricGroup = new Group(metricResultsGroup, SWT.NONE);		
+		metricGroup.setLayout(getRowLayout());
+		
 		for(Metric metric: metrics) {
-			Label metricLabel = new Label(metricResultsGroup, SWT.NONE);
+			Group metricAndValueGroup = new Group(metricGroup, SWT.SHADOW_ETCHED_IN);		
+			metricAndValueGroup.setLayout(new GridLayout(2, true));
+			
+			Label metricLabel = new Label(metricAndValueGroup, SWT.NONE);
 			metricLabel.setText(metric.getMetricShortName());
 			metricLabel.setToolTipText(metric.getMetricFullName());
 			
-			Text metricTextValue = new Text(metricResultsGroup, SWT.BORDER);
+			Text metricTextValue = new Text(metricAndValueGroup, SWT.NONE);
 			metricTextValue.setText(String.valueOf(metric.getMetricValue()));
 			metricTextValue.setEditable(false);
 		}
@@ -163,6 +180,21 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 			addCheckBoxListener(checkBox);
 		}
 	}
+	
+	private RowLayout getRowLayout() {
+		RowLayout rowLayout = new RowLayout();
+		rowLayout.wrap = false;
+		rowLayout.pack = false;
+		rowLayout.justify = true;
+		rowLayout.type = SWT.HORIZONTAL;
+		rowLayout.marginLeft = 5;
+		rowLayout.marginTop = 5;
+		rowLayout.marginRight = 5;
+		rowLayout.marginBottom = 5;
+		rowLayout.spacing = 5;
+		return rowLayout;
+	}
+
 
 	/**
 	 * Adds listener to the given checkBox
@@ -173,34 +205,31 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 			@Override
 		    public void widgetSelected(SelectionEvent e) {
 
-				IFile file = controller.getModel().getFileFromStructuredSelection();
+				IFile file = controller.getModel().getIFile();
 				ICompilationUnit iCompilationUnit = JavaCore.createCompilationUnitFrom(file);
 				multipleRefactoring.setfCompilationUnit(iCompilationUnit);
 				
 		        Button button = (Button) e.widget;
 		        boolean selected = button.getSelection();
+		        enableDisableButtons(selected, button);
 		        
 		        RefactoringEnum refactor = refactoringCheckboxMap.get(button);
 		        
 		        if(!selected) {
-		        	multipleRefactoring.removeRefactoring(refactor);
+		        	multipleRefactoring.removeRefactoring(refactor);		        
 		        } else {
 		        	if(refactor==RefactoringEnum.EXTRACT_METHOD) {
 		        		ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
 		        		multipleRefactoring.addRefactoringsToBeDone(extractMethodRefactoring);
 		        	} else if(refactor==RefactoringEnum.EXTRACT_CLASS) {
-		        		ExtractClassRefactoring extractClassRefactoring = refactoringBuilder.getExtractedClassRefactoring(controller).iterator().next();
-		        		if(extractClassRefactoring!=null) {
+		        		Set<ExtractClassRefactoring> extractClassRefactorings = refactoringBuilder.getExtractedClassRefactoring(controller);		        		
+		        		for(ExtractClassRefactoring extractClassRefactoring: extractClassRefactorings) {
 		        			multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);	
 		        		}
-		        		//for(ExtractClassRefactoring newRefactoring : refactoringBuilder.getExtractedClassRefactoring(controller)){
-		        		//	multipleRefactoring.addRefactoringsToBeDone(newRefactoring);	
-		        		//}												
-
 		        	} else if(refactor==RefactoringEnum.MOVE_METHOD) {
 		        		// selectedRefactorings.add(new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit, 
-		        		//								sourceTypeDeclaration, targetTypeDeclaration, sourceMethod, 
-		        		//								additionalMethodsToBeMoved, leaveDelegate, movedMethodName);
+		        		//	sourceTypeDeclaration, targetTypeDeclaration, sourceMethod, 
+		        		//	additionalMethodsToBeMoved, leaveDelegate, movedMethodName);
 		        	}
 
 		        }     		      
@@ -208,13 +237,25 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		        
 		    }
 
+			private void enableDisableButtons(boolean selected, Button button) {
+				for(Button checkBox: refactoringCheckboxMap.keySet()){
+					if(selected && checkBox!=button) {
+						checkBox.setEnabled(false);
+					}
+					
+					if(!selected){
+						checkBox.setEnabled(true);
+					}
+				}
+			}
+
 			
 		});
 	}
 	
 	private boolean anyCheckBoxSelected() {
 		for(Button checkBox: refactoringCheckboxMap.keySet()){
-			if(checkBox.getSelection()) {
+			if(!checkBox.isDisposed() && checkBox.getSelection()) {
 				return true;
 			}
 		}

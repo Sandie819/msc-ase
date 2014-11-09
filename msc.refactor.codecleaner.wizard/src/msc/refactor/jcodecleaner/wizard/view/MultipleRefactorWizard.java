@@ -13,17 +13,23 @@ import msc.refactor.jcodecleaner.wizard.view.pages.MainSelectorPage;
 import msc.refactor.jcodecleaner.wizard.view.pages.RefactoringOptionsPage;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ltk.core.refactoring.Change;
+import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.FrameworkUtil;
 
 public class MultipleRefactorWizard extends RefactoringWizard  {
 
@@ -44,10 +50,11 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 
 		this.controller = controller;
 		this.setFileSelected = setFileSelected;
+
 		setDefaultPageTitle("JCodeCleaner");		
 		setTitleBarColor(new RGB(128,0,128));
 		setWindowTitle("JCodeCleaning Wizard");
-		
+
 		setNeedsProgressMonitor(true);
 
 		createPages();
@@ -68,11 +75,10 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 		container.addPageChangingListener(new IPageChangingListener() {
 			@Override
 			public void handlePageChanging(PageChangingEvent event) {
-
-				if(event.getTargetPage() instanceof RefactoringOptionsPage) {
-					//Reset Model, compilation unit etc
+				
+				if(event.getTargetPage() instanceof RefactoringOptionsPage
+						&& event.getCurrentPage() instanceof MainSelectorPage) {
 					setUpRefactoringOptionsPage();
-
 				}
 			}
 		});
@@ -83,52 +89,72 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 	 */
 	protected void setUpRefactoringOptionsPage() {
 		WizardModel model = controller.getModel();
-		IFile file = model.getFileFromStructuredSelection();
+		IFile file = model.getIFile();
 
 		analyser = new Analyser();
 		List<Metric> metrics = analyser.analyseSelection(file);
 		RefactoringOpportunitiesModel refactoringOpportunities = analyser.identifyRefactoringOpportunities(file);
-		double fitnessFunctionValue = analyser.calculateFitnessFunction();
+		model.addFitnessFunctionCalculation(analyser.calculateFitnessFunction(refactoringOpportunities.getAvailableRefactorings()));
 		model.setRefactoringOpportunities(refactoringOpportunities);
 
 		refactoringOptionsPage.onEnterPage(metrics, refactoringOpportunities.getAvailableRefactorings(), 
-				fitnessFunctionValue);
+				model.getFitnessFunctionCalulations());
 	}
 
 	@Override
 	public boolean performFinish() {
 		IProgressMonitor monitor = new NullProgressMonitor();
 		MultipleRefactoring multipleRefactoring = getMultipleRefactoring();
+
+		OrganizeImportsAction organiseImportsAction = new OrganizeImportsAction(controller.getModel().getPart().getSite());
+
 		try {
 
 			if(multipleRefactoring.getChanges()==null || multipleRefactoring.getChanges().isEmpty()) {
 				return true;
 			} else {				
-				
+
 				for(Change change:  multipleRefactoring.getChanges()){
-					change.perform(monitor);
+					change.perform(monitor);					 
 				}				
-				try {
-					((WizardDialog)getContainer()).close();
+				//try {
+				((WizardDialog)getContainer()).close();
 
-					multipleRefactoring.setChanges(new ArrayList<Change>()); 
-					RefactoringWizardOpenOperation operation = new 
-							RefactoringWizardOpenOperation(
-									new MultipleRefactorWizard(controller, 
-											multipleRefactoring, true));
-					
-					operation.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
-							"Multiple Refactorings");
+				controller.getModel().getDeodorantActivator().stop(FrameworkUtil.getBundle(
+						controller.getModel().getIFile().
+						getClass()).getBundleContext());
 
-				} catch (InterruptedException exception) {
-					// Do nothing
+				//organiseImportsAction.run(JavaCore.createCompilationUnitFrom(controller.getModel().getIFile()));
+				controller.getModel().setRefactoringOpportunities(null);					
+				controller.getModel().setDeodorantActivator(new gr.uom.java.jdeodorant.refactoring.Activator());
+
+				multipleRefactoring.setRefactoringsToBeDone(new ArrayList<Refactoring>());
+				multipleRefactoring.setChanges(new ArrayList<Change>()); 
+				RefactoringWizardOpenOperation operation = new 
+						RefactoringWizardOpenOperation(
+								new MultipleRefactorWizard(controller, 
+										multipleRefactoring, true));					
+
+				IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+
+				for(int i = 0; i < projects.length; i++){
+					IProject project = projects[i];
+					if(project.isOpen()) {
+						project.refreshLocal(IResource.DEPTH_INFINITE, null);
+					}
 				}
 
+				operation.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
+						"Multiple Refactorings");
 			}
 
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}  catch (InterruptedException exception) {
+			// Do nothing
+		} catch (Exception exception) {
+
 		}
 		return false;
 	}
