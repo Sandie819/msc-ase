@@ -9,11 +9,11 @@ Project Progress
 	- Rename refactorings (method) (DONE)
 	- Clean class - organise imports, remove unused methods, variables etc (In Progress)
 	- Another series of refactorings to include logical organisation of code in the class
-4. Add metrics (In Progress) 
+4. Add metrics  
 	- Cohesion Metrics: LCOM2 & LCOM3 (Done)
 	- Other Cohesion Metrics (In Progress)
-	- Combining Metrics to create a Fitness Function (In Progress)
-5. User page to select refactorings based on analysis of code (using metrics, fitness function from point 4 above)
+	- Combining Metrics to create a Fitness Function (Done)
+5. User page to select refactorings based on analysis of code (using metrics, fitness function from point 4 above) (Done)
 6. Code smell detection
 	- Incorporate FindBugs Plugin?? Now looking at JDeodorant
 
