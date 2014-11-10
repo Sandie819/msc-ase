@@ -15,12 +15,10 @@ import msc.refactor.jcodecleaner.wizard.model.WizardModel;
 import msc.refactor.jcodecleaner.wizard.view.pages.MainSelectorPage;
 import msc.refactor.jcodecleaner.wizard.view.pages.RefactoringOptionsPage;
 
-import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -71,6 +69,7 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 				IProject activeProject = controller.getModel().getIFile().getProject();
 				activeProject.refreshLocal(IResource.FORCE, null);			
 				activeProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
+				activeProject.refreshLocal(IResource.DEPTH_INFINITE, null);
 			}
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block

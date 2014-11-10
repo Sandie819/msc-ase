@@ -67,12 +67,7 @@ public class Standalone {
 	
 	public static Set<ExtractClassCandidateGroup> getExtractClassRefactoringOpportunitiesForClass(IJavaProject project, IFile file) {
 		CompilationUnitCache.getInstance().clearCache();
-		if(ASTReader.getSystemObject() != null && project.equals(ASTReader.getExaminedProject())) {
-			new ASTReader(project, ASTReader.getSystemObject(), null);
-		}
-		else {
-			new ASTReader(project, null);
-		}
+		new ASTReader(project, null);
 		SystemObject systemObject = ASTReader.getSystemObject();
 		
 		Set<ClassObject> classObjectsToBeExamined = new LinkedHashSet<ClassObject>();
