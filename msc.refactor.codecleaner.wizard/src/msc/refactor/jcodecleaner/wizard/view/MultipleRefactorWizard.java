@@ -1,27 +1,34 @@
 package msc.refactor.jcodecleaner.wizard.view;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import msc.refactor.jcodecleaner.analyser.Analyser;
 import msc.refactor.jcodecleaner.analyser.metrics.Metric;
 import msc.refactor.jcodecleaner.multiplerefactoring.MultipleRefactoring;
+import msc.refactor.jcodecleaner.wizard.Activator;
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
 import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
 import msc.refactor.jcodecleaner.wizard.model.WizardModel;
 import msc.refactor.jcodecleaner.wizard.view.pages.MainSelectorPage;
 import msc.refactor.jcodecleaner.wizard.view.pages.RefactoringOptionsPage;
 
+import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
@@ -37,10 +44,10 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 	private MainSelectorPage mainSelectorPage;
 	private RefactoringOptionsPage refactoringOptionsPage;
 	private Analyser analyser;
-	private boolean setFileSelected;
+	private boolean fileSelected;
 
 	public MultipleRefactorWizard(WizardController controller, 
-			MultipleRefactoring refactoring, boolean setFileSelected) {
+			MultipleRefactoring refactoring, boolean fileSelected) {
 		super(refactoring, WIZARD_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
 
 		PlatformUI.getWorkbench().saveAll(
@@ -49,20 +56,47 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 				null, true);
 
 		this.controller = controller;
-		this.setFileSelected = setFileSelected;
+		this.fileSelected = fileSelected;
 
 		setDefaultPageTitle("JCodeCleaner");		
+		setDefaultPageImageDescriptor(getImageDescriptor("wizard-icon.gif"));
 		setTitleBarColor(new RGB(128,0,128));
 		setWindowTitle("JCodeCleaning Wizard");
-
 		setNeedsProgressMonitor(true);
 
 		createPages();
+		
+		try {
+			if(fileSelected) {
+				IProject activeProject = controller.getModel().getIFile().getProject();
+				activeProject.refreshLocal(IResource.FORCE, null);			
+				activeProject.build(IncrementalProjectBuilder.FULL_BUILD, null);
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private ImageDescriptor getImageDescriptor(String relativePath) {
+		ImageDescriptor descriptor = null;
+		try {
+			URL iconBaseURL = new URL(Activator.getDefault().getBundle().getEntry("/"), "icons/");
+
+			Activator.getDefault().getImageRegistry().put("wizard-icon",
+
+					descriptor = ImageDescriptor.createFromURL(new URL(iconBaseURL + "wizard-icon.gif")));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return descriptor;		
 	}
 
 	private void createPages(){		
 		refactoringOptionsPage = new RefactoringOptionsPage(controller, (MultipleRefactoring)getMultipleRefactoring());
-		mainSelectorPage = new MainSelectorPage(controller, setFileSelected);
+		mainSelectorPage = new MainSelectorPage(controller, fileSelected);
 	}
 
 	@Override
@@ -75,7 +109,7 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 		container.addPageChangingListener(new IPageChangingListener() {
 			@Override
 			public void handlePageChanging(PageChangingEvent event) {
-				
+
 				if(event.getTargetPage() instanceof RefactoringOptionsPage
 						&& event.getCurrentPage() instanceof MainSelectorPage) {
 					setUpRefactoringOptionsPage();
@@ -124,7 +158,7 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 						controller.getModel().getIFile().
 						getClass()).getBundleContext());
 
-				//organiseImportsAction.run(JavaCore.createCompilationUnitFrom(controller.getModel().getIFile()));
+				organiseImportsAction.run(JavaCore.createCompilationUnitFrom(controller.getModel().getIFile()));
 				controller.getModel().setRefactoringOpportunities(null);					
 				controller.getModel().setDeodorantActivator(new gr.uom.java.jdeodorant.refactoring.Activator());
 
@@ -134,15 +168,6 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 						RefactoringWizardOpenOperation(
 								new MultipleRefactorWizard(controller, 
 										multipleRefactoring, true));					
-
-				IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-
-				for(int i = 0; i < projects.length; i++){
-					IProject project = projects[i];
-					if(project.isOpen()) {
-						project.refreshLocal(IResource.DEPTH_INFINITE, null);
-					}
-				}
 
 				operation.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
 						"Multiple Refactorings");

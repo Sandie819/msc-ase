@@ -61,7 +61,8 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 		
 		if(setFileSelected) {
 			getTreeViewer().setSelection(controller.getModel().getStructuredSelection(), true);
-			getTreeViewer().refresh();
+			getTreeViewer().refresh();			
+			selectionChanged(new SelectionChangedEvent(null, controller.getModel().getStructuredSelection()));
 		}
 		//applyDialogFont(result);
 		//PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IJavaHelpContextIds.BP_SELECT_DEFAULT_OUTPUT_FOLDER_DIALOG);
@@ -89,7 +90,7 @@ public class SelectionDialog extends ElementTreeSelectionDialog implements ISele
 
 			}
 		}
-		controller.getModel().setStructuredSelection(structuredSelection);
+		controller.getModel().setStructuredSelection(structuredSelection);		
 		callingPage.setPageComplete(enableButton);
 	}
 }

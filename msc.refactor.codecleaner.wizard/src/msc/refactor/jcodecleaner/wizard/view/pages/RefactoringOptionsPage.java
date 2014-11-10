@@ -169,7 +169,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		
 		if(refactorings.isEmpty()){
 			Label noOptions = new Label(refactoringOptionsGroup, SWT.NONE);
-			noOptions.setText("No refactorings are available for your selected class");
+			noOptions.setText("No refactorings were identified for your selected class");
 		}
 		
 		for(RefactoringEnum refactor: refactorings) {

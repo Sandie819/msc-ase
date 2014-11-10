@@ -8,6 +8,7 @@
             description="Refactoring Actions"
             id="msc.refactor.jcodecleaner.wizard.popup1"
             label="JCodeCleaner"
+            icon="icons/wizard-icon.gif"
             visible="true">
          <menu
                label="Refactor"
