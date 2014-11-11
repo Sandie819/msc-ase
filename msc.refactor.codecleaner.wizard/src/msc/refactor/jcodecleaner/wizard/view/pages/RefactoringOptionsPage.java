@@ -2,6 +2,7 @@ package msc.refactor.jcodecleaner.wizard.view.pages;
 
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractClassRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractMethodRefactoring;
+import gr.uom.java.jdeodorant.refactoring.manipulators.MoveMethodRefactoring;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -227,9 +228,10 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		        			multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);	
 		        		}
 		        	} else if(refactor==RefactoringEnum.MOVE_METHOD) {
-		        		// selectedRefactorings.add(new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit, 
-		        		//	sourceTypeDeclaration, targetTypeDeclaration, sourceMethod, 
-		        		//	additionalMethodsToBeMoved, leaveDelegate, movedMethodName);
+		        		Set<MoveMethodRefactoring> moveMethodRefactorings = refactoringBuilder.getMoveMethodRefactoring(controller);
+		        		for(MoveMethodRefactoring moveMethod: moveMethodRefactorings) {
+		        			multipleRefactoring.addRefactoringsToBeDone(moveMethod);
+		        		}
 		        	}
 
 		        }     		      

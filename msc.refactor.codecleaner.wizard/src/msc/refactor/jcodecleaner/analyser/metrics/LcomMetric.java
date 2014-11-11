@@ -171,6 +171,7 @@ public class LcomMetric extends Metric  {
 		
 		applicableRefactorings.add(RefactoringEnum.EXTRACT_CLASS);
 		applicableRefactorings.add(RefactoringEnum.EXTRACT_METHOD);
+		applicableRefactorings.add(RefactoringEnum.MOVE_METHOD);
 		
 		return applicableRefactorings;
 	}

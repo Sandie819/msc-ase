@@ -41,19 +41,20 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 public class Standalone {
 
-	public static List<MoveMethodCandidateRefactoring> getMoveMethodRefactoringOpportunities(IJavaProject project) {
+	public static List<MoveMethodCandidateRefactoring> getMoveMethodRefactoringOpportunities(IJavaProject project, IFile file) {
 		CompilationUnitCache.getInstance().clearCache();
 		new ASTReader(project, null);
 		SystemObject systemObject = ASTReader.getSystemObject();
 		
-		Set<ClassObject> classObjectsToBeExamined = new LinkedHashSet<ClassObject>();
-		classObjectsToBeExamined.addAll(systemObject.getClassObjects());
-		
 		Set<String> classNamesToBeExamined = new LinkedHashSet<String>();
-		for(ClassObject classObject : classObjectsToBeExamined) {
-			if(!classObject.isEnum())
+		
+		for(ClassObject classObject : systemObject.getClassObjects()){
+			if(classObject.getIFile().getFullPath().equals(file.getFullPath())
+					&& !classObject.isEnum()) {
 				classNamesToBeExamined.add(classObject.getName());
+			}
 		}
+		
 		MySystem system = new MySystem(systemObject, false);
 		DistanceMatrix distanceMatrix = new DistanceMatrix(system);
 		distanceMatrix.generateDistances(null);

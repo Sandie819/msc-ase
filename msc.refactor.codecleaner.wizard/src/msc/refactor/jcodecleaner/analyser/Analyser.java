@@ -1,6 +1,7 @@
 package msc.refactor.jcodecleaner.analyser;
 
 import gr.uom.java.distance.ExtractClassCandidateGroup;
+import gr.uom.java.distance.MoveMethodCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
 
@@ -93,25 +94,19 @@ public class Analyser {
 			if(suggestedRefactoring==RefactoringEnum.EXTRACT_METHOD) {
 				Set<ASTSliceGroup> extractMethodOpportunities = Standalone.getExtractMethodRefactoringOpportunitiesForClass(project, file);
 
-				for(ASTSliceGroup sliceGroup: extractMethodOpportunities){
-					for(ASTSlice slice : sliceGroup.getCandidates()) {
-						if(slice.getIFile().getFullPath().equals(file.getFullPath())){
-							refactoringOpportunities.setExtractMethodOpportunities(extractMethodOpportunities);
-							refactoringOpportunities.addRefactoringOption(RefactoringEnum.EXTRACT_METHOD);
-						}
-					}
-				}		
+				if(!extractMethodOpportunities.isEmpty()) {
+					refactoringOpportunities.setExtractMethodOpportunities(extractMethodOpportunities);
+					refactoringOpportunities.addRefactoringOption(RefactoringEnum.EXTRACT_METHOD);
+				}
 			}
 
 			if(suggestedRefactoring==RefactoringEnum.MOVE_METHOD) {
-//				List<MoveMethodCandidateRefactoring> moveMethodOpportunities = Standalone.getMoveMethodRefactoringOpportunities(project);
-//
-//				for(MoveMethodCandidateRefactoring candidate: moveMethodOpportunities){
-//					if(candidate.getSourceIFile().getFullPath().equals(file.getFullPath())){
-//						refactoringOpportunities.setMoveMethodOpportunities(moveMethodOpportunities);
-//						refactoringOpportunities.addRefactoringOption(RefactoringEnum.MOVE_METHOD);
-//					}
-//				}		
+				List<MoveMethodCandidateRefactoring> moveMethodOpportunities = Standalone.getMoveMethodRefactoringOpportunities(project, file);
+
+				if(!moveMethodOpportunities.isEmpty()){
+					refactoringOpportunities.setMoveMethodOpportunities(moveMethodOpportunities);
+					refactoringOpportunities.addRefactoringOption(RefactoringEnum.MOVE_METHOD);
+				}	
 			}
 
 		}

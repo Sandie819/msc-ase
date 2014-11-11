@@ -2,12 +2,15 @@ package msc.refactor.jcodecleaner.multiplerefactoring;
 
 import gr.uom.java.distance.ExtractClassCandidateGroup;
 import gr.uom.java.distance.ExtractClassCandidateRefactoring;
+import gr.uom.java.distance.MoveMethodCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractClassRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractMethodRefactoring;
+import gr.uom.java.jdeodorant.refactoring.manipulators.MoveMethodRefactoring;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
@@ -108,5 +111,33 @@ public class RefactoringBuilder {
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		return (CompilationUnit) parser.createAST(monitor);
+	}
+
+	public Set<MoveMethodRefactoring> getMoveMethodRefactoring(WizardController controller) {
+
+		Set<MoveMethodRefactoring> moveMethodRefactorings = new HashSet<MoveMethodRefactoring>();
+		
+		RefactoringOpportunitiesModel opportunitites = controller.getModel()
+				.getRefactoringOpportunities();
+		
+		List<MoveMethodCandidateRefactoring> moveMethodCandidates = opportunitites.getMoveMethodOpportunities();
+		
+		for(MoveMethodCandidateRefactoring candidateRefactoring: moveMethodCandidates) {
+
+			CompilationUnit sourceCompilationUnit = (CompilationUnit)candidateRefactoring.getSourceClassTypeDeclaration().getRoot();			
+			CompilationUnit targetCompilationUnit = (CompilationUnit)candidateRefactoring.getTargetClassTypeDeclaration().getRoot();
+			
+			MoveMethodRefactoring moveMethod = new MoveMethodRefactoring(
+					sourceCompilationUnit, targetCompilationUnit, 
+					candidateRefactoring.getSourceClassTypeDeclaration(), 
+					candidateRefactoring.getTargetClassTypeDeclaration(), 
+					candidateRefactoring.getSourceMethodDeclaration(), 
+					candidateRefactoring.getAdditionalMethodsToBeMoved(), 
+					candidateRefactoring.leaveDelegate(), 
+					candidateRefactoring.getMovedMethodName());
+			
+			moveMethodRefactorings.add(moveMethod);
+		}
+		return moveMethodRefactorings;
 	}
 }
