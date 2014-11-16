@@ -3,19 +3,13 @@ package msc.refactor.jcodecleaner.wizard.view;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
-import msc.refactor.jcodecleaner.analyser.Analyser;
-import msc.refactor.jcodecleaner.analyser.metrics.Metric;
 import msc.refactor.jcodecleaner.multiplerefactoring.MultipleRefactoring;
 import msc.refactor.jcodecleaner.wizard.Activator;
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
-import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
-import msc.refactor.jcodecleaner.wizard.model.WizardModel;
 import msc.refactor.jcodecleaner.wizard.view.pages.MainSelectorPage;
 import msc.refactor.jcodecleaner.wizard.view.pages.RefactoringOptionsPage;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -27,31 +21,32 @@ import org.eclipse.jdt.ui.actions.OrganizeImportsAction;
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.Refactoring;
+import org.eclipse.ltk.internal.ui.refactoring.PreviewWizardPage;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.FrameworkUtil;
 
+@SuppressWarnings("restriction")
 public class MultipleRefactorWizard extends RefactoringWizard  {
 
 	private WizardController controller;
 	private MainSelectorPage mainSelectorPage;
 	private RefactoringOptionsPage refactoringOptionsPage;
-	private Analyser analyser;
 	private boolean fileSelected;
 
-	public MultipleRefactorWizard(WizardController controller, 
-			MultipleRefactoring refactoring, boolean fileSelected) {
+	public MultipleRefactorWizard(WizardController controller, MultipleRefactoring refactoring, boolean fileSelected) {
 		super(refactoring, WIZARD_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
 
 		PlatformUI.getWorkbench().saveAll(
 				PlatformUI.getWorkbench().getModalDialogShellProvider(), 
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow(), 
-				null, true);
+				null, false);
 
 		this.controller = controller;
 		this.fileSelected = fileSelected;
@@ -76,6 +71,8 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 			e.printStackTrace();
 		}
 	}
+	
+	
 
 	private ImageDescriptor getImageDescriptor(String relativePath) {
 		ImageDescriptor descriptor = null;
@@ -93,45 +90,49 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 		return descriptor;		
 	}
 
-	private void createPages(){		
-		refactoringOptionsPage = new RefactoringOptionsPage(controller, (MultipleRefactoring)getMultipleRefactoring());
+	private void createPages(){				
+		refactoringOptionsPage = new RefactoringOptionsPage(controller, (MultipleRefactoring)getMultipleRefactoring(), fileSelected);
 		mainSelectorPage = new MainSelectorPage(controller, fileSelected);
 	}
 
 	@Override
 	protected void addUserInputPages() {
-
-		addPage(mainSelectorPage);	
+		if(!fileSelected) {
+			addPage(mainSelectorPage);
+		}
+		
 		addPage(refactoringOptionsPage);
-
-		WizardDialog container = (WizardDialog)getContainer();
+		
+		MultipleRefactorWizardDialog container = (MultipleRefactorWizardDialog)getContainer();
 		container.addPageChangingListener(new IPageChangingListener() {
 			@Override
 			public void handlePageChanging(PageChangingEvent event) {
 
-				if(event.getTargetPage() instanceof RefactoringOptionsPage
-						&& event.getCurrentPage() instanceof MainSelectorPage) {
+				if(event.getTargetPage() instanceof RefactoringOptionsPage) {
 					setUpRefactoringOptionsPage();
+					
 				}
+				handleFinishButton();
 			}
+
 		});
+		
+		
+	}
+
+	protected void handleFinishButton() {
+		if(hasValidRefactorings()) {
+			controller.getModel().getMultipleRefactorWizardDialog().renameFinishButton("Apply Refactoring");			
+		} else {
+			controller.getModel().getMultipleRefactorWizardDialog().renameFinishButton("Finish");	
+		}
 	}
 
 	/**
 	 * Sets up the configuration for the refactoring options page
 	 */
 	protected void setUpRefactoringOptionsPage() {
-		WizardModel model = controller.getModel();
-		IFile file = model.getIFile();
-
-		analyser = new Analyser();
-		List<Metric> metrics = analyser.analyseSelection(file);
-		RefactoringOpportunitiesModel refactoringOpportunities = analyser.identifyRefactoringOpportunities(file);
-		model.addFitnessFunctionCalculation(analyser.calculateFitnessFunction(refactoringOpportunities.getAvailableRefactorings()));
-		model.setRefactoringOpportunities(refactoringOpportunities);
-
-		refactoringOptionsPage.onEnterPage(metrics, refactoringOpportunities.getAvailableRefactorings(), 
-				model.getFitnessFunctionCalulations());
+		refactoringOptionsPage.onEnterPage();
 	}
 
 	@Override
@@ -140,10 +141,9 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 		MultipleRefactoring multipleRefactoring = getMultipleRefactoring();
 
 		OrganizeImportsAction organiseImportsAction = new OrganizeImportsAction(controller.getModel().getPart().getSite());
-
 		try {
 
-			if(multipleRefactoring.getChanges()==null || multipleRefactoring.getChanges().isEmpty()) {
+			if(!hasValidRefactorings()) {
 				return true;
 			} else {				
 
@@ -163,13 +163,13 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 
 				multipleRefactoring.setRefactoringsToBeDone(new ArrayList<Refactoring>());
 				multipleRefactoring.setChanges(new ArrayList<Change>()); 
-				RefactoringWizardOpenOperation operation = new 
-						RefactoringWizardOpenOperation(
-								new MultipleRefactorWizard(controller, 
-										multipleRefactoring, true));					
-
-				operation.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
-						"Multiple Refactorings");
+				
+				MultipleRefactorWizard wizard = new MultipleRefactorWizard(controller, multipleRefactoring, true);
+				MultipleRefactorWizardDialog wizardDialog = new MultipleRefactorWizardDialog(Display.getDefault().getActiveShell(), wizard);
+				MulitpleRefactoringWizardOpenOperation operation = new MulitpleRefactoringWizardOpenOperation(wizard, wizardDialog);
+				controller.getModel().setMultipleRefactorWizardDialog(wizardDialog);
+				
+				operation.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Multiple Refactorings");
 			}
 
 		} catch (CoreException e) {
@@ -185,5 +185,34 @@ public class MultipleRefactorWizard extends RefactoringWizard  {
 
 	private MultipleRefactoring getMultipleRefactoring() {
 		return (MultipleRefactoring) getRefactoring();
+	}
+
+	private boolean hasValidRefactorings() {
+		return !(getMultipleRefactoring().getChanges()==null || getMultipleRefactoring().getChanges().isEmpty());
+	}
+	
+	@Override
+	public IWizardPage getNextPage(IWizardPage page) {
+		IWizardPage nextPage = super.getNextPage(page);
+		
+		if(fileSelected && nextPage instanceof RefactoringOptionsPage) {
+			setUpRefactoringOptionsPage();
+			return refactoringOptionsPage;
+		} else {
+			return super.getNextPage(page);
+		}
+	}
+	   
+	@Override
+	public boolean canFinish() {
+		handleFinishButton();
+		
+		if((getContainer().getCurrentPage() == refactoringOptionsPage &&
+				!refactoringOptionsPage.hasRefactoringOptions())
+				|| getContainer().getCurrentPage() instanceof PreviewWizardPage) {			
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

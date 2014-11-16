@@ -2,6 +2,8 @@ package msc.refactor.jcodecleaner.wizard.model;
 
 import java.util.LinkedList;
 
+import msc.refactor.jcodecleaner.wizard.view.MultipleRefactorWizardDialog;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
@@ -19,6 +21,7 @@ public class WizardModel {
 	private RefactoringOpportunitiesModel refactoringOpportunities;
 	private LinkedList<Double> fitnessFunctionCalulations;
 	private gr.uom.java.jdeodorant.refactoring.Activator deodorantActivator;
+	private MultipleRefactorWizardDialog multipleRefactorWizardDialog;
 	
 	public IWorkbenchPart getPart() {
 		return part;
@@ -78,8 +81,14 @@ public class WizardModel {
 	}
 	public void setDeodorantActivator(gr.uom.java.jdeodorant.refactoring.Activator deodorantActivator) {
 		this.deodorantActivator = deodorantActivator;
-	}
+	}	
 	
+	public MultipleRefactorWizardDialog getMultipleRefactorWizardDialog() {
+		return multipleRefactorWizardDialog;
+	}
+	public void setMultipleRefactorWizardDialog(MultipleRefactorWizardDialog multipleRefactorWizardDialog) {
+		this.multipleRefactorWizardDialog = multipleRefactorWizardDialog;
+	}
 	public IFile getIFile() {		 
 		Object obj = structuredSelection.getFirstElement();
 		IFile file = (IFile) Platform.getAdapterManager().getAdapter(obj, IFile.class);

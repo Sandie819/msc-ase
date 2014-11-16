@@ -58,7 +58,9 @@ public class MultipleRefactoring extends Refactoring {
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = null;
+		
 		for(Refactoring refactoring: refactoringsToBeDone){
+			
 			if(status==null){
 				status = refactoring.checkFinalConditions(pm);
 			} else{
@@ -71,27 +73,15 @@ public class MultipleRefactoring extends Refactoring {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-
-		//ASTRewrite astRewrite = ASTRewrite.create(fJavaAST.getAST());
 		Change result = new CompilationUnitChange(
 				"Multiple Refactorings", fCompilationUnit);
-		List<Change> changes = new ArrayList<Change>();
-		for(Refactoring refactoring: refactoringsToBeDone){
-			
+	
+		changes = new ArrayList<Change>();
+		for(Refactoring refactoring: refactoringsToBeDone){			
 			result = refactoring.createChange(pm);
 			changes.add(result);
 
 		}
-//		Change combinedChange = null;
-//		TextChangeCombiner changeCombiner = new TextChangeCombiner();
-//		for(Change change: changes) {
-//			combinedChange = changeCombiner.combineChanges(change);
-//		}
-
-		setChanges(changes);
-		//		MultiTextEdit root = new MultiTextEdit();
-		//	    result.setEdit(root);
-		//	    root.addChild(astRewrite.rewriteAST());
 		return result;
 	}
 
@@ -131,6 +121,17 @@ public class MultipleRefactoring extends Refactoring {
 		    if (refactoring.getClass().isAssignableFrom(refactor.getRefactoringType())) {
 		    	it.remove();
 		    }
+		}
+	}
+	
+	/** 
+	 * @param refactor
+	 */
+	public void removeRefactoring() {
+		
+		for (Iterator<Refactoring> it = refactoringsToBeDone.iterator(); it.hasNext(); ) {
+			it.next();
+		    it.remove();
 		}
 	}
 

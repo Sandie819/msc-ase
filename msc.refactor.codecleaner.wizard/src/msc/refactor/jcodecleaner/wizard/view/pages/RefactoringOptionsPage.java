@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import msc.refactor.jcodecleaner.analyser.Analyser;
 import msc.refactor.jcodecleaner.analyser.metrics.Metric;
 import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 import msc.refactor.jcodecleaner.multiplerefactoring.MultipleRefactoring;
 import msc.refactor.jcodecleaner.multiplerefactoring.RefactoringBuilder;
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
+import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
+import msc.refactor.jcodecleaner.wizard.model.WizardModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -48,14 +51,18 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	
 	private Group refactoringOptionsGroup;
 	private Group metricResultsGroup;
-	private Group fitnessFunctionGroup;
+//	private Group fitnessFunctionGroup;
 	
-	public RefactoringOptionsPage(WizardController controller, MultipleRefactoring multipleRefactoring) {
+	private boolean fileSelected;
+	
+	public RefactoringOptionsPage(WizardController controller, 
+			MultipleRefactoring multipleRefactoring, boolean fileSelected) {
 		super("Refactoring options");
 		setMessage("Metric results, please select refactoring from given choices");
 		
 		this.controller = controller;
 		this.multipleRefactoring = multipleRefactoring;
+		this.fileSelected = fileSelected;
 		
 		refactoringCheckboxMap = new HashMap<Button, RefactoringEnum>();
 		refactoringBuilder = new RefactoringBuilder();
@@ -66,14 +73,14 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		composite = new Composite(parent, SWT.NONE);		
 		composite.setLayout(new GridLayout(1, true));		
 		
-		fitnessFunctionGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
-		fitnessFunctionGroup.setText("Overall Fitness Function");
-		fitnessFunctionGroup.setLayout(new GridLayout(1, true));
-		fitnessFunctionGroup.setLayoutData(new GridData(GridData.FILL_BOTH));	
+//		fitnessFunctionGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+//		fitnessFunctionGroup.setText("Overall Fitness Function");
+//		fitnessFunctionGroup.setLayout(new GridLayout(1, true));
+//		fitnessFunctionGroup.setLayoutData(new GridData(GridData.FILL_BOTH));	
 		
 		metricResultsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 		metricResultsGroup.setText("Metric Results");			
-		metricResultsGroup.setLayout(new GridLayout(1, true));
+		metricResultsGroup.setLayout(new GridLayout(1, false));
 		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		refactoringOptionsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
@@ -82,6 +89,28 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		refactoringOptionsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		setControl(composite);
+		setPageComplete(false);		
+		
+		if(fileSelected) {
+			onEnterPage();
+		}
+	}
+	
+	/**
+	 * Sets up the configuration for the refactoring options page
+	 */
+	public void onEnterPage() {
+		WizardModel model = controller.getModel();
+		IFile file = model.getIFile();
+		multipleRefactoring.removeRefactoring();
+
+		Analyser analyser = new Analyser();
+		List<Metric> metrics = analyser.analyseSelection(file);
+		RefactoringOpportunitiesModel refactoringOpportunities = analyser.identifyRefactoringOpportunities(file);
+		model.addFitnessFunctionCalculation(analyser.calculateFitnessFunction(refactoringOpportunities.getAvailableRefactorings()));
+		model.setRefactoringOpportunities(refactoringOpportunities);
+
+		createPanels(metrics, refactoringOpportunities.getAvailableRefactorings(), model.getFitnessFunctionCalulations());
 	}
 	
 	/**
@@ -92,43 +121,43 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	 * @param refactorings
 	 * @param fitnessFunctionCalcs
 	 */
-	public void onEnterPage(List<Metric> metrics, Set<RefactoringEnum> refactorings,
+	public void createPanels(List<Metric> metrics, Set<RefactoringEnum> refactorings,
 			LinkedList<Double> fitnessFunctionCalcs){
 		
-		createFitnessFunctionPanel(fitnessFunctionCalcs);		
+		//createFitnessFunctionPanel(fitnessFunctionCalcs);		
 		createMetricResultPanel(metrics);
 		createRefactoringOptions(refactorings);
 
 		composite.layout();
 	}
 
-	/**
-	 * @param fitnessFunctionCalcs
-	 */
-	private void createFitnessFunctionPanel(LinkedList<Double> fitnessFunctionCalcs) {
-		clearGroup(fitnessFunctionGroup);
-		
-		Label fitnessLabel = new Label(fitnessFunctionGroup, SWT.NONE);
-		fitnessLabel.setText("Calculated Fitness functions");
-		
-		Group fitnessFunctionResultGroup = new Group(fitnessFunctionGroup, SWT.SHADOW_ETCHED_IN);		
-		fitnessFunctionResultGroup.setLayout(new GridLayout(4, true));
-		
-		int index = 1;
-		for(Double fitnessCalculation: fitnessFunctionCalcs) {
-			Label resultLabel = new Label(fitnessFunctionResultGroup, SWT.NONE);
-			resultLabel.setText("Phase "+index+ ": ");
-			
-			Text text = new Text(fitnessFunctionResultGroup, SWT.BORDER);
-			text.setText(String.valueOf(fitnessCalculation));
-			text.setEditable(false);
-			index++;
-		}
-		
-		Label lblHint = new Label(fitnessFunctionGroup, SWT.NONE);
-		lblHint.setText("Zero is optimal, above zero means there is room for improvment \n"
-				+ "Based on weighted values from the various metrics outlined below.");		
-	}
+//	/**
+//	 * @param fitnessFunctionCalcs
+//	 */
+//	private void createFitnessFunctionPanel(LinkedList<Double> fitnessFunctionCalcs) {
+//		clearGroup(fitnessFunctionGroup);
+//		
+//		Label fitnessLabel = new Label(fitnessFunctionGroup, SWT.NONE);
+//		fitnessLabel.setText("Calculated Fitness functions");
+//		
+//		Group fitnessFunctionResultGroup = new Group(fitnessFunctionGroup, SWT.SHADOW_ETCHED_IN);		
+//		fitnessFunctionResultGroup.setLayout(new GridLayout(4, true));
+//		
+//		int index = 1;
+//		for(Double fitnessCalculation: fitnessFunctionCalcs) {
+//			Label resultLabel = new Label(fitnessFunctionResultGroup, SWT.NONE);
+//			resultLabel.setText("Phase "+index+ ": ");
+//			
+//			Text text = new Text(fitnessFunctionResultGroup, SWT.BORDER);
+//			text.setText(String.valueOf(fitnessCalculation));
+//			text.setEditable(false);
+//			index++;
+//		}
+//		
+//		Label lblHint = new Label(fitnessFunctionGroup, SWT.NONE);
+//		lblHint.setText("Zero is optimal, above zero means there is room for improvment \n"
+//				+ "Based on weighted values from the various metrics outlined below.");		
+//	}
 
 	/**
 	 * Adds each metric to the group for holding metric results
@@ -143,10 +172,10 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		
 		for(Metric metric: metrics) {
 			Group metricAndValueGroup = new Group(metricGroup, SWT.SHADOW_ETCHED_IN);		
-			metricAndValueGroup.setLayout(new GridLayout(2, true));
+			metricAndValueGroup.setLayout(new GridLayout(2, false));
 			
 			Label metricLabel = new Label(metricAndValueGroup, SWT.NONE);
-			metricLabel.setText(metric.getMetricShortName());
+			metricLabel.setText(metric.getMetricFullName());
 			metricLabel.setToolTipText(metric.getMetricFullName());
 			
 			Text metricTextValue = new Text(metricAndValueGroup, SWT.NONE);
@@ -157,7 +186,9 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 	private void clearGroup(Group group) {		
 		for(Control widget: group.getChildren()){
-			widget.dispose();
+			if(!widget.isDisposed())  {
+				widget.dispose();
+			}
 		}
 		composite.layout();
 	}
@@ -241,12 +272,14 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 			private void enableDisableButtons(boolean selected, Button button) {
 				for(Button checkBox: refactoringCheckboxMap.keySet()){
-					if(selected && checkBox!=button) {
-						checkBox.setEnabled(false);
-					}
-					
-					if(!selected){
-						checkBox.setEnabled(true);
+					if(!checkBox.isDisposed()) {
+						if(selected && checkBox!=button) {
+							checkBox.setEnabled(false);
+						}
+
+						if(!selected){
+							checkBox.setEnabled(true);
+						}
 					}
 				}
 			}
@@ -262,6 +295,10 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 			}
 		}
 		return false;
+	}
+	
+	public boolean hasRefactoringOptions() {
+		return refactoringCheckboxMap.size()>0;
 	}
 	
 	@Override
