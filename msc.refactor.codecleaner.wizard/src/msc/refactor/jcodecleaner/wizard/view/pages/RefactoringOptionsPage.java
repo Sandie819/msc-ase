@@ -168,17 +168,14 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		clearGroup(metricResultsGroup);
 		
 		Group metricGroup = new Group(metricResultsGroup, SWT.NONE);		
-		metricGroup.setLayout(getRowLayout());
+		metricGroup.setLayout(new GridLayout(2, false));
 		
 		for(Metric metric: metrics) {
-			Group metricAndValueGroup = new Group(metricGroup, SWT.SHADOW_ETCHED_IN);		
-			metricAndValueGroup.setLayout(new GridLayout(2, false));
-			
-			Label metricLabel = new Label(metricAndValueGroup, SWT.NONE);
+			Label metricLabel = new Label(metricGroup, SWT.NONE);
 			metricLabel.setText(metric.getMetricFullName());
 			metricLabel.setToolTipText(metric.getMetricFullName());
 			
-			Text metricTextValue = new Text(metricAndValueGroup, SWT.NONE);
+			Text metricTextValue = new Text(metricGroup, SWT.NONE);
 			metricTextValue.setText(String.valueOf(metric.getMetricValue()));
 			metricTextValue.setEditable(false);
 		}
