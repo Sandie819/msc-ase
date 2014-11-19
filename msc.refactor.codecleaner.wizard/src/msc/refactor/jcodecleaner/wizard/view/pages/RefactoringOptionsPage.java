@@ -27,6 +27,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -52,17 +54,21 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private RefactoringBuilder refactoringBuilder;
 	private MultipleRefactoring multipleRefactoring;
 	private PreviewSubPanel previewSubPanel;
-
+	private PageListener pageListener;
+	
 	private Group headingGroup;
 	private Group refactoringOptionsGroup;
 	private Group metricResultsGroup;
 	private Group previewGroup;
+	private Group userInput;
 
 	private List<Metric> metrics;
 	private RefactoringOpportunitiesModel refactoringOpportunities;
 	private boolean fileSelected;
 	private Label classNameLabel;
-	
+	private Label userInputLabel;
+	private Text userInputText;
+
 	private static final Font DEFAULT_FONT = new Font(Display.getDefault(),"Arial", 9, SWT.BOLD );
 
 	public RefactoringOptionsPage(WizardController controller, 
@@ -76,31 +82,37 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 		refactoringCheckboxMap = new HashMap<Button, RefactoringEnum>();
 		refactoringBuilder = new RefactoringBuilder();
-		
+		pageListener = new PageListener(controller);
 	}
 
 	@Override
 	public void createControl(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);		
 		composite.setLayout(new GridLayout(1, true));
-		
-		headingGroup = new Group(composite, SWT.BORDER_DOT);
-		
+
+		//headingGroup = new Group(composite, SWT.BORDER_DOT);
+
 		metricResultsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 		metricResultsGroup.setText("Metric Results");	
 		metricResultsGroup.setFont(DEFAULT_FONT);
 		metricResultsGroup.setLayout(new GridLayout(1, false));
-		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		metricResultsGroup.pack();
 
 		refactoringOptionsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 		refactoringOptionsGroup.setText("Refactoring Options Available");
 		refactoringOptionsGroup.setFont(DEFAULT_FONT);
 		refactoringOptionsGroup.setLayout(new GridLayout(4, true));
-		refactoringOptionsGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
+		refactoringOptionsGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		refactoringOptionsGroup.pack();
+
 		previewGroup = new Group(composite, SWT.BORDER_DOT);
+		previewGroup.setLayout(new GridLayout(1, false));
+		previewGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+		previewGroup.setFont(DEFAULT_FONT);
+		previewGroup.setVisible(false);
 		previewSubPanel = new PreviewSubPanel(previewGroup);
-		
+
 		setControl(composite);
 		setPageComplete(false);		
 
@@ -169,7 +181,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	public void createPanels(List<Metric> metrics, Set<RefactoringEnum> refactorings,
 			LinkedList<Double> fitnessFunctionCalcs){
 
-		createHeadingPanel();		
+		//createHeadingPanel();		
 		createMetricResultPanel(metrics);
 		createRefactoringOptions(refactorings);
 
@@ -182,7 +194,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private void createHeadingPanel() {			
 		if(classNameLabel == null) {
 			headingGroup.setLayout(new GridLayout(1, true));
-			headingGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+			headingGroup.setLayoutData(new GridData());
 
 			IFile file = controller.getModel().getIFile();
 			classNameLabel = new Label(headingGroup, SWT.NONE);
@@ -212,6 +224,9 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 			metricTextValue.setText(String.valueOf(metric.getMetricValue()));
 			metricTextValue.setEditable(false);
 		}
+
+		metricResultsGroup.pack(true);
+		metricResultsGroup.layout();
 	}
 
 	private void clearGroup(Group group) {		
@@ -232,19 +247,41 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		if(refactorings.isEmpty()){
 			Label noOptions = new Label(refactoringOptionsGroup, SWT.NONE);
 			noOptions.setText("No refactorings were identified for your selected class");
-		}
+		} else {
 
-		Group refactorOpts = new Group(refactoringOptionsGroup, SWT.NONE);		
-		refactorOpts.setLayout(new GridLayout(2, false));
-		
-		for(RefactoringEnum refactor: refactorings) {
+			Group refactorOpts = new Group(refactoringOptionsGroup, SWT.NONE);		
+			refactorOpts.setLayout(new GridLayout(2, false));
+
+			for(RefactoringEnum refactor: refactorings) {
+
+				Button checkBox = new Button(refactorOpts, SWT.CHECK);
+				checkBox.setText(refactor.getRefactoringName());			
+				refactoringCheckboxMap.put(checkBox, refactor);	 
+
+				addCheckBoxListener(checkBox);
+
+			}
+			userInput = new Group(refactoringOptionsGroup, SWT.NONE);		
+			userInput.setLayout(new GridLayout(2, false));
+			userInput.setVisible(false);
 			
-			Button checkBox = new Button(refactorOpts, SWT.CHECK);
-			checkBox.setText(refactor.getRefactoringName());			
-			refactoringCheckboxMap.put(checkBox, refactor);	 
+			userInputLabel = new Label(userInput, SWT.NONE);
+			userInputLabel.setText("Name for new method: ");
+			userInputLabel.setVisible(false);
 
-			addCheckBoxListener(checkBox);
+			userInputText = new Text(userInput, SWT.BORDER);
+			GridData gridData = new GridData();
+			gridData.horizontalAlignment = SWT.FILL;
+			gridData.grabExcessHorizontalSpace = true;
+			userInputText.setLayoutData(gridData);
+			userInputText.setLayoutData(new GridData(90, 15));
+			userInputText.setEditable(true);
+			userInputText.setVisible(false);
+			userInput.pack();
+			userInput.layout();
 		}
+		refactoringOptionsGroup.pack(true);
+		refactoringOptionsGroup.layout();
 	}
 
 	/**
@@ -270,16 +307,45 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 					multipleRefactoring.removeRefactoring(refactor);		        
 				} else {
 					if(refactor==RefactoringEnum.EXTRACT_METHOD) {
-						ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
+						final ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
 						multipleRefactoring.addRefactoringsToBeDone(extractMethodRefactoring);
+						userInputText.setVisible(true);
+						userInput.setVisible(true);
+						userInputLabel.setVisible(true);
+						userInputText.setText(extractMethodRefactoring.getExtractedMethodName());
+						userInputLabel.setText("New Method Name: ");
+						
+						userInputText.addModifyListener(new ModifyListener(){
+						      public void modifyText(ModifyEvent event) {
+						        // Get the widget whose text was modified
+						        Text text = (Text) event.widget;
+						        extractMethodRefactoring.setExtractedMethodName(text.getText());
+						        System.out.println(text.getText());
+						      }
+						 });
+						
 					} else if(refactor==RefactoringEnum.EXTRACT_CLASS) {
 						Set<ExtractClassRefactoring> extractClassRefactorings = refactoringBuilder.getExtractedClassRefactoring(controller);		        		
-						for(ExtractClassRefactoring extractClassRefactoring: extractClassRefactorings) {
-							multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);	
+						for(final ExtractClassRefactoring extractClassRefactoring: extractClassRefactorings) {
+							multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);							
+							userInputText.setVisible(true);
+							userInputLabel.setVisible(true);
+							userInput.setVisible(true);
+							userInputText.setText(extractClassRefactoring.getExtractedTypeName());
+							userInputLabel.setText("New Class Name: ");
+							
+							userInputText.addModifyListener(new ModifyListener(){
+							      public void modifyText(ModifyEvent event) {
+							        // Get the widget whose text was modified
+							        Text text = (Text) event.widget;
+							        extractClassRefactoring.setExtractedTypeName(text.getText());
+							        System.out.println(text.getText());
+							      }
+							 });
 						}
-						
-						previewSubPanel.addPreviewForClassRefactoring(multipleRefactoring);
-						
+
+						previewSubPanel.addPreviewForClassRefactoring(multipleRefactoring, file);
+
 					} else if(refactor==RefactoringEnum.MOVE_METHOD) {
 						Set<MoveMethodRefactoring> moveMethodRefactorings = refactoringBuilder.getMoveMethodRefactoring(controller);
 						for(MoveMethodRefactoring moveMethod: moveMethodRefactorings) {
@@ -301,6 +367,11 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 						if(!selected){
 							checkBox.setEnabled(true);
+							userInputText.setVisible(false);
+							userInputLabel.setVisible(false);
+							userInput.setVisible(false);
+//							userInputText.remove
+							previewGroup.setVisible(false);
 						}
 					}
 				}
@@ -308,7 +379,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 
 		});
-		
+
 		composite.layout();
 	}
 

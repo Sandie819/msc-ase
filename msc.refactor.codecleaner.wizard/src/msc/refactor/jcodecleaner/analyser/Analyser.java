@@ -2,9 +2,7 @@ package msc.refactor.jcodecleaner.analyser;
 
 import gr.uom.java.distance.ExtractClassCandidateGroup;
 import gr.uom.java.distance.MoveMethodCandidateRefactoring;
-import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
-import gr.uom.java.jdeodorant.refactoring.views.CloneDiffWizardPage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
