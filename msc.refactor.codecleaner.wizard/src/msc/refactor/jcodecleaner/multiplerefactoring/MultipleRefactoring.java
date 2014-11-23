@@ -29,7 +29,7 @@ public class MultipleRefactoring extends Refactoring {
 	private List<Refactoring> refactoringsToBeDone = null;
 	private List<Change> changes = null;
 	private ICompilationUnit fCompilationUnit;
-	private CompilationUnit fJavaAST;
+	//private CompilationUnit fJavaAST;
 
 	public MultipleRefactoring() {		
 		super();		
@@ -42,7 +42,7 @@ public class MultipleRefactoring extends Refactoring {
 		RefactoringStatus status = new RefactoringStatus();
 		status.isOK();
 		if(fCompilationUnit!=null){
-			fJavaAST = parse(pm, fCompilationUnit);;
+			//fJavaAST = parse(pm, fCompilationUnit);;
 			for(Refactoring refactoring: refactoringsToBeDone){
 				if(status==null){
 					status = refactoring.checkInitialConditions(pm);
@@ -152,13 +152,13 @@ public class MultipleRefactoring extends Refactoring {
 		this.fCompilationUnit = fCompilationUnit;
 	}
 
-	public CompilationUnit getfJavaAST() {
-		return fJavaAST;
-	}
-
-	public void setfJavaAST(CompilationUnit fJavaAST) {
-		this.fJavaAST = fJavaAST;
-	}
+//	public CompilationUnit getfJavaAST() {
+//		return fJavaAST;
+//	}
+//
+//	public void setfJavaAST(CompilationUnit fJavaAST) {
+//		this.fJavaAST = fJavaAST;
+//	}
 
 	@SuppressWarnings("rawtypes")
 	public RefactoringStatus initialize(Map fArguments) {		

@@ -28,7 +28,7 @@ import org.eclipse.ui.progress.IProgressService;
 /**
  * NOTE - This is a copy of RefactoringWizardOpenOperation
  * I needed a specific implementation of the way the RefactoringWizardDialog is created
- * The class isn't intended to be extended/ subclassed 
+ * The class isn't intended to be extended/ sub-classed 
  *
  */
 public class MulitpleRefactoringWizardOpenOperation {

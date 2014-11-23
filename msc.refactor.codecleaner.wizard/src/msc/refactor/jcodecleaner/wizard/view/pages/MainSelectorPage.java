@@ -34,12 +34,16 @@ public class MainSelectorPage extends UserInputWizardPage {
 		gridLayout.numColumns = 1;
 		mainComposite.setLayout(gridLayout);
 
-		SelectionDialog selector = new SelectionDialog(controller, 
+		MetricSelector metricSelector = new MetricSelector(controller);
+		metricSelector.createClassSelectorArea(mainComposite);
+		
+		ClassSelector selector = new ClassSelector(controller, 
 				new WorkbenchLabelProvider(), 
 				new BaseWorkbenchContentProvider(), this, setFileSelected);
-		
-		setPageComplete(false);		
+				
 		selector.createDialogArea(mainComposite);
+		
+		setPageComplete(false);	
 		setControl(mainComposite);	
 	}	
 }

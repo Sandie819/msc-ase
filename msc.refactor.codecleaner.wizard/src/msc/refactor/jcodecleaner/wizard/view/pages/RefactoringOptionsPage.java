@@ -42,7 +42,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-
 /**
  * @author mulligans
  */
@@ -54,9 +53,8 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private RefactoringBuilder refactoringBuilder;
 	private MultipleRefactoring multipleRefactoring;
 	private PreviewSubPanel previewSubPanel;
-	private PageListener pageListener;
-	
-	private Group headingGroup;
+	//private PageListener pageListener;
+
 	private Group refactoringOptionsGroup;
 	private Group metricResultsGroup;
 	private Group previewGroup;
@@ -65,14 +63,13 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private List<Metric> metrics;
 	private RefactoringOpportunitiesModel refactoringOpportunities;
 	private boolean fileSelected;
-	private Label classNameLabel;
 	private Label userInputLabel;
 	private Text userInputText;
 
-	private static final Font DEFAULT_FONT = new Font(Display.getDefault(),"Arial", 9, SWT.BOLD );
+	private static final Font DEFAULT_FONT = new Font(Display.getDefault(), "Arial", 9, SWT.BOLD);
 
-	public RefactoringOptionsPage(WizardController controller, 
-			MultipleRefactoring multipleRefactoring, boolean fileSelected) {
+	public RefactoringOptionsPage(WizardController controller, MultipleRefactoring multipleRefactoring,
+			boolean fileSelected) {
 		super("Refactoring options");
 		setMessage("Metric results, please select refactoring from given choices");
 
@@ -82,18 +79,18 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 		refactoringCheckboxMap = new HashMap<Button, RefactoringEnum>();
 		refactoringBuilder = new RefactoringBuilder();
-		pageListener = new PageListener(controller);
+		//pageListener = new PageListener(controller);
 	}
 
 	@Override
 	public void createControl(Composite parent) {
-		composite = new Composite(parent, SWT.NONE);		
+		composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, true));
 
-		//headingGroup = new Group(composite, SWT.BORDER_DOT);
+		// headingGroup = new Group(composite, SWT.BORDER_DOT);
 
 		metricResultsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
-		metricResultsGroup.setText("Metric Results");	
+		metricResultsGroup.setText("Metric Results");
 		metricResultsGroup.setFont(DEFAULT_FONT);
 		metricResultsGroup.setLayout(new GridLayout(1, false));
 		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -110,13 +107,12 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		previewGroup.setLayout(new GridLayout(1, false));
 		previewGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
 		previewGroup.setFont(DEFAULT_FONT);
-		previewGroup.setVisible(false);
 		previewSubPanel = new PreviewSubPanel(previewGroup);
 
 		setControl(composite);
-		setPageComplete(false);		
+		setPageComplete(false);
 
-		if(fileSelected) {
+		if (fileSelected) {
 			onEnterPage();
 		}
 	}
@@ -143,7 +139,8 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 						Thread.sleep(500);
 
 						Analyser analyser = new Analyser();
-						setMetrics(analyser.analyseSelection(file));
+						analyser.analyseSelectionAndUpdateMetricValues(file, model.getMetrics());
+
 						monitor.subTask(" calculating metrics ");
 						Thread.sleep(500);
 
@@ -151,57 +148,46 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 						monitor.subTask(" identifying possible refactorings");
 						Thread.sleep(500);
 
-						model.addFitnessFunctionCalculation(analyser.calculateFitnessFunction(refactoringOpportunities.getAvailableRefactorings()));
+						model.addFitnessFunctionCalculation(analyser.calculateFitnessFunction(
+								refactoringOpportunities.getAvailableRefactorings(), 
+								model.getMetrics()));
+						
 						model.setRefactoringOpportunities(refactoringOpportunities);
 
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					monitor.worked(1);         
+					monitor.worked(1);
 					monitor.done();
 
 				}
-			}); 
-		} catch(Exception e) {
+			});
+		} catch (Exception e) {
 
 		}
-		createPanels(getMetrics(), getRefactoringOpportunities().getAvailableRefactorings(), 
+		createPanels(controller.getModel().getMetrics(), getRefactoringOpportunities().getAvailableRefactorings(),
 				model.getFitnessFunctionCalulations());
 	}
 
 	/**
-	 * On Entering the Re-factoring options page sets metrics, refactorings
-	 * and fitness function
+	 * On Entering the Re-factoring options page sets metrics, refactorings and
+	 * fitness function
 	 * 
 	 * @param metrics
 	 * @param refactorings
 	 * @param fitnessFunctionCalcs
 	 */
 	public void createPanels(List<Metric> metrics, Set<RefactoringEnum> refactorings,
-			LinkedList<Double> fitnessFunctionCalcs){
+			LinkedList<Double> fitnessFunctionCalcs) {
 
-		//createHeadingPanel();		
+		previewGroup.setVisible(false);
+
+		// createHeadingPanel();
 		createMetricResultPanel(metrics);
 		createRefactoringOptions(refactorings);
 
 		composite.layout();
-	}
-
-	/**
-	 * Class name panel
-	 */
-	private void createHeadingPanel() {			
-		if(classNameLabel == null) {
-			headingGroup.setLayout(new GridLayout(1, true));
-			headingGroup.setLayoutData(new GridData());
-
-			IFile file = controller.getModel().getIFile();
-			classNameLabel = new Label(headingGroup, SWT.NONE);
-			classNameLabel.setText(file.getName());
-			classNameLabel.setFont(DEFAULT_FONT);
-			classNameLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-		}
 	}
 
 	/**
@@ -212,10 +198,10 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private void createMetricResultPanel(List<Metric> metrics) {
 		clearGroup(metricResultsGroup);
 
-		Group metricGroup = new Group(metricResultsGroup, SWT.NONE);		
+		Group metricGroup = new Group(metricResultsGroup, SWT.NONE);
 		metricGroup.setLayout(new GridLayout(2, false));
 
-		for(Metric metric: metrics) {
+		for (Metric metric : metrics) {
 			Label metricLabel = new Label(metricGroup, SWT.NONE);
 			metricLabel.setText(metric.getMetricFullName());
 			metricLabel.setToolTipText(metric.getMetricFullName());
@@ -229,9 +215,14 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		metricResultsGroup.layout();
 	}
 
-	private void clearGroup(Group group) {		
-		for(Control widget: group.getChildren()){
-			if(!widget.isDisposed())  {
+	/**
+	 * Disposes of widgets in given group
+	 * 
+	 * @param group
+	 */
+	private void clearGroup(Group group) {
+		for (Control widget : group.getChildren()) {
+			if (!widget.isDisposed()) {
 				widget.dispose();
 			}
 		}
@@ -244,27 +235,27 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private void createRefactoringOptions(Set<RefactoringEnum> refactorings) {
 		clearGroup(refactoringOptionsGroup);
 
-		if(refactorings.isEmpty()){
+		if (refactorings.isEmpty()) {
 			Label noOptions = new Label(refactoringOptionsGroup, SWT.NONE);
 			noOptions.setText("No refactorings were identified for your selected class");
 		} else {
 
-			Group refactorOpts = new Group(refactoringOptionsGroup, SWT.NONE);		
+			Group refactorOpts = new Group(refactoringOptionsGroup, SWT.NONE);
 			refactorOpts.setLayout(new GridLayout(2, false));
 
-			for(RefactoringEnum refactor: refactorings) {
+			for (RefactoringEnum refactor : refactorings) {
 
 				Button checkBox = new Button(refactorOpts, SWT.CHECK);
-				checkBox.setText(refactor.getRefactoringName());			
-				refactoringCheckboxMap.put(checkBox, refactor);	 
+				checkBox.setText(refactor.getRefactoringName());
+				refactoringCheckboxMap.put(checkBox, refactor);
 
 				addCheckBoxListener(checkBox);
 
 			}
-			userInput = new Group(refactoringOptionsGroup, SWT.NONE);		
+			userInput = new Group(refactoringOptionsGroup, SWT.NONE);
 			userInput.setLayout(new GridLayout(2, false));
 			userInput.setVisible(false);
-			
+
 			userInputLabel = new Label(userInput, SWT.NONE);
 			userInputLabel.setText("Name for new method: ");
 			userInputLabel.setVisible(false);
@@ -286,6 +277,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 	/**
 	 * Adds listener to the given checkBox
+	 * 
 	 * @param checkBox
 	 */
 	private void addCheckBoxListener(Button checkBox) {
@@ -303,80 +295,86 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 				RefactoringEnum refactor = refactoringCheckboxMap.get(button);
 
-				if(!selected) {
-					multipleRefactoring.removeRefactoring(refactor);		        
+				if (!selected) {
+					multipleRefactoring.removeRefactoring(refactor);
 				} else {
-					if(refactor==RefactoringEnum.EXTRACT_METHOD) {
-						final ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder.getExtractedMethodRefactoring(controller);
+					if (refactor == RefactoringEnum.EXTRACT_METHOD) {
+						final ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder
+								.getExtractedMethodRefactoring(controller);
 						multipleRefactoring.addRefactoringsToBeDone(extractMethodRefactoring);
 						userInputText.setVisible(true);
 						userInput.setVisible(true);
 						userInputLabel.setVisible(true);
 						userInputText.setText(extractMethodRefactoring.getExtractedMethodName());
 						userInputLabel.setText("New Method Name: ");
-						
-						userInputText.addModifyListener(new ModifyListener(){
-						      public void modifyText(ModifyEvent event) {
-						        // Get the widget whose text was modified
-						        Text text = (Text) event.widget;
-						        extractMethodRefactoring.setExtractedMethodName(text.getText());
-						        System.out.println(text.getText());
-						      }
-						 });
-						
-					} else if(refactor==RefactoringEnum.EXTRACT_CLASS) {
-						Set<ExtractClassRefactoring> extractClassRefactorings = refactoringBuilder.getExtractedClassRefactoring(controller);		        		
-						for(final ExtractClassRefactoring extractClassRefactoring: extractClassRefactorings) {
-							multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);							
+
+						userInputText.addModifyListener(new ModifyListener() {
+							public void modifyText(ModifyEvent event) {
+								// Get the widget whose text was modified
+								Text text = (Text) event.widget;
+								extractMethodRefactoring.setExtractedMethodName(text.getText());
+								System.out.println(text.getText());
+							}
+						});
+
+						previewSubPanel.addPreviewForExtractMethodRefactoring(controller.getModel()
+								.getRefactoringOpportunities().getExtractMethodOpportunities(), file);
+
+					} else if (refactor == RefactoringEnum.EXTRACT_CLASS) {
+						Set<ExtractClassRefactoring> extractClassRefactorings = refactoringBuilder
+								.getExtractedClassRefactoring(controller);
+						for (final ExtractClassRefactoring extractClassRefactoring : extractClassRefactorings) {
+							multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);
 							userInputText.setVisible(true);
 							userInputLabel.setVisible(true);
 							userInput.setVisible(true);
 							userInputText.setText(extractClassRefactoring.getExtractedTypeName());
 							userInputLabel.setText("New Class Name: ");
-							
-							userInputText.addModifyListener(new ModifyListener(){
-							      public void modifyText(ModifyEvent event) {
-							        // Get the widget whose text was modified
-							        Text text = (Text) event.widget;
-							        extractClassRefactoring.setExtractedTypeName(text.getText());
-							        System.out.println(text.getText());
-							      }
-							 });
+
+							userInputText.addModifyListener(new ModifyListener() {
+								public void modifyText(ModifyEvent event) {
+									// Get the widget whose text was modified
+									Text text = (Text) event.widget;
+									extractClassRefactoring.setExtractedTypeName(text.getText());
+									System.out.println(text.getText());
+								}
+							});
+							previewSubPanel.addPreviewForExtractClassRefactoring(extractClassRefactoring);
 						}
 
-						previewSubPanel.addPreviewForClassRefactoring(multipleRefactoring, file);
-
-					} else if(refactor==RefactoringEnum.MOVE_METHOD) {
-						Set<MoveMethodRefactoring> moveMethodRefactorings = refactoringBuilder.getMoveMethodRefactoring(controller);
-						for(MoveMethodRefactoring moveMethod: moveMethodRefactorings) {
+					} else if (refactor == RefactoringEnum.MOVE_METHOD) {
+						Set<MoveMethodRefactoring> moveMethodRefactorings = refactoringBuilder
+								.getMoveMethodRefactoring(controller);
+						for (MoveMethodRefactoring moveMethod : moveMethodRefactorings) {
 							multipleRefactoring.addRefactoringsToBeDone(moveMethod);
+							previewSubPanel.addPreviewForMoveMethodRefactoring(controller.getModel()
+									.getRefactoringOpportunities().getMoveMethodOpportunities());
 						}
 					}
 
-				}     		      
-				setPageComplete(anyCheckBoxSelected());		  
+				}
+				setPageComplete(anyCheckBoxSelected());
 
 			}
 
 			private void enableDisableButtons(boolean selected, Button button) {
-				for(Button checkBox: refactoringCheckboxMap.keySet()){
-					if(!checkBox.isDisposed()) {
-						if(selected && checkBox!=button) {
+				for (Button checkBox : refactoringCheckboxMap.keySet()) {
+					if (!checkBox.isDisposed()) {
+						if (selected && checkBox != button) {
 							checkBox.setEnabled(false);
 						}
 
-						if(!selected){
+						if (!selected) {
 							checkBox.setEnabled(true);
 							userInputText.setVisible(false);
 							userInputLabel.setVisible(false);
 							userInput.setVisible(false);
-//							userInputText.remove
+							// userInputText.remove
 							previewGroup.setVisible(false);
 						}
 					}
 				}
 			}
-
 
 		});
 
@@ -384,8 +382,8 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	}
 
 	private boolean anyCheckBoxSelected() {
-		for(Button checkBox: refactoringCheckboxMap.keySet()){
-			if(!checkBox.isDisposed() && checkBox.getSelection()) {
+		for (Button checkBox : refactoringCheckboxMap.keySet()) {
+			if (!checkBox.isDisposed() && checkBox.getSelection()) {
 				return true;
 			}
 		}
@@ -393,12 +391,12 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	}
 
 	public boolean hasRefactoringOptions() {
-		return refactoringCheckboxMap.size()>0;
+		return refactoringCheckboxMap.size() > 0;
 	}
 
 	@Override
 	public IWizardPage getPreviousPage() {
-		if(anyCheckBoxSelected()) {
+		if (anyCheckBoxSelected()) {
 			return null;
 		} else {
 			return super.getPreviousPage();
@@ -420,6 +418,5 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	public void setRefactoringOpportunities(RefactoringOpportunitiesModel refactoringOpportunities) {
 		this.refactoringOpportunities = refactoringOpportunities;
 	}
-
 
 }

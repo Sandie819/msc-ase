@@ -1,5 +1,7 @@
 package msc.refactor.jcodecleaner.analyser.metrics;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,23 +27,22 @@ import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 
-public class LcomMetric extends Metric  {
+public class LCOM2 extends Metric  {
 
 	private Set<IMethod> methods = new HashSet<IMethod>();
 	private Set<IField> fields = new HashSet<IField>();
 	private static Map<IField, Integer> INSTANCE_VARIABLE_COUNTER;
 
-
 	private static Boolean METHOD_HAS_REF = null;
 
-	public LcomMetric() {
-		super("Lack of Cohesion of Methods", "LCOM", 0);
+	public LCOM2() {
+		super("Lack of Cohesion of Methods (2)", "LCOM2", 0);
 		INSTANCE_VARIABLE_COUNTER = new HashMap<IField, Integer>();
 	}
-
+	
 	public double calculateMetricValue(IFile file) {
 		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
-
+	
 		try {
 			buildInstanceFields(compilationUnit);
 			buildMethodsInClass(compilationUnit);
@@ -76,7 +77,9 @@ public class LcomMetric extends Metric  {
 			System.out.println("lcom3:" + lcom3);
 		}
 
-		setMetricValue(lcom2);
+		BigDecimal lcomBigDecimal = new BigDecimal(lcom2).setScale(3, RoundingMode.CEILING);
+	
+		setMetricValue(lcomBigDecimal.doubleValue());
 		return lcom2;
 	}
 
@@ -91,6 +94,8 @@ public class LcomMetric extends Metric  {
 			IMethod[] methodsArray = type.getMethods();
 			for (int j = 0; j < methodsArray.length; j++) {
 				IMethod method = methodsArray[j];
+				
+				
 				methods.add(method);
 			}
 		}

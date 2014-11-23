@@ -1,10 +1,21 @@
 package msc.refactor.jcodecleaner.analyser.metrics;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public abstract class Metric {
 	
@@ -60,8 +71,46 @@ public abstract class Metric {
 	public boolean metricExceedsThreshold(){
 		return (this.metricValue > this.threshold);
 	}
+	
+	public Set<IMethod> getMethodsFromClass(ICompilationUnit compilationUnit) {
+		Set<IMethod> methods = new HashSet<IMethod>();
+				
+		try {
+			IType types[] = compilationUnit.getTypes();
+			for (int i = 0; i < types.length; i++) {
+				IType type = types[i];
+				IMethod[] methodsArray = type.getMethods();
+				for (int j = 0; j < methodsArray.length; j++) {
+					IMethod method = methodsArray[j];
+					methods.add(method);
+				}
+			}
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return methods;
+	}
 
-	public abstract List<RefactoringEnum> getApplicableMetricRefactorings();
+	public List<RefactoringEnum> getApplicableMetricRefactorings() {		
+		applicableRefactorings = new ArrayList<RefactoringEnum>();
+		
+		applicableRefactorings.add(RefactoringEnum.EXTRACT_CLASS);
+		applicableRefactorings.add(RefactoringEnum.EXTRACT_METHOD);
+		applicableRefactorings.add(RefactoringEnum.MOVE_METHOD);
+		
+		return applicableRefactorings;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public CompilationUnit parse(IProgressMonitor monitor, ICompilationUnit compilationUnit) {
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(compilationUnit); 
+		parser.setResolveBindings(true); 
+		parser.setBindingsRecovery(true);
+		return (CompilationUnit) parser.createAST(monitor);
+	}
 	
 	@Override
 	public String toString(){

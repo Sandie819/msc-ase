@@ -1,7 +1,9 @@
 package msc.refactor.jcodecleaner.wizard.model;
 
 import java.util.LinkedList;
+import java.util.List;
 
+import msc.refactor.jcodecleaner.analyser.metrics.Metric;
 import msc.refactor.jcodecleaner.wizard.view.MultipleRefactorWizardDialog;
 
 import org.eclipse.core.resources.IFile;
@@ -22,6 +24,7 @@ public class WizardModel {
 	private LinkedList<Double> fitnessFunctionCalulations;
 	private gr.uom.java.jdeodorant.refactoring.Activator deodorantActivator;
 	private MultipleRefactorWizardDialog multipleRefactorWizardDialog;
+	private List<Metric> metrics;
 	
 	public IWorkbenchPart getPart() {
 		return part;
@@ -100,4 +103,11 @@ public class WizardModel {
 		return file;
 	}
 	
+	public List<Metric> getMetrics() {
+		return metrics;
+	}
+	
+	public void setMetrics(List<Metric> metrics) {
+		this.metrics = metrics;
+	}
 }

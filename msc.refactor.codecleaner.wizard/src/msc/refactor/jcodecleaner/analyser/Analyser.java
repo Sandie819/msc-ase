@@ -4,13 +4,10 @@ import gr.uom.java.distance.ExtractClassCandidateGroup;
 import gr.uom.java.distance.MoveMethodCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import msc.refactor.jcodecleaner.analyser.metrics.DepthOfInheritanceTree;
-import msc.refactor.jcodecleaner.analyser.metrics.LcomMetric;
 import msc.refactor.jcodecleaner.analyser.metrics.Metric;
 import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
@@ -22,27 +19,12 @@ import org.eclipse.jdt.core.JavaCore;
 public class Analyser {
 
 	private Set<RefactoringEnum> refactoringsForMetrics;
-	private List<Metric> metrics;
 
 	public Analyser(){
 		refactoringsForMetrics = new HashSet<RefactoringEnum>();
-		metrics = new ArrayList<Metric>();
 	}
 
-	public List<Metric> analyseSelection(IFile file) {
-		buildMetricsList();
-		runMetrics(file);
-
-		return metrics;
-	}
-	
-	private void buildMetricsList() {
-		metrics.add(new LcomMetric());
-		metrics.add(new DepthOfInheritanceTree());
-	}
-
-	public void runMetrics(IFile file) {
-
+	public void analyseSelectionAndUpdateMetricValues(IFile file, List<Metric> metrics) {
 		for(Metric metric: metrics) {
 			metric.calculateMetricValue(file);
 
@@ -53,9 +35,10 @@ public class Analyser {
 			System.out.println(metric.toString());
 		}
 	}
+	
 
-
-	public double calculateFitnessFunction(Set<RefactoringEnum> identifiedRefactorings){
+	public double calculateFitnessFunction(Set<RefactoringEnum> identifiedRefactorings,
+			List<Metric> metrics){
 		double fitness = 0;
 		for(Metric metric: metrics) {							
 				List<RefactoringEnum> applicableMetricRefactorings = metric.getApplicableMetricRefactorings();
@@ -108,8 +91,6 @@ public class Analyser {
 				}	
 			}
 			
-			
-
 		}
 		return refactoringOpportunities;
 
