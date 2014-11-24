@@ -2,7 +2,6 @@ package msc.refactor.jcodecleaner.wizard.view.pages;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +33,10 @@ public class MetricSelector {
 		selectedMetrics = new ArrayList<Metric>();
 	}
 
+	/**
+	 * @param parent
+	 * @return control
+	 */ 
 	public Control createClassSelectorArea(Composite parent) {
 
 		Group metricOptionsGroup = new Group(parent, SWT.SHADOW_ETCHED_IN);
@@ -59,6 +62,10 @@ public class MetricSelector {
 		return parent;
 	}
 
+	/**
+	 * Add listener and handle event
+	 * @param checkBox
+	 */
 	private void addCheckBoxListener(Button checkBox) {
 		
 		checkBox.addSelectionListener(new SelectionAdapter() {

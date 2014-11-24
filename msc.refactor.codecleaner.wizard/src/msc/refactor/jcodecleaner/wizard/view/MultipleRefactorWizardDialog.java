@@ -15,7 +15,7 @@ public class MultipleRefactorWizardDialog extends WizardDialog {
 	public MultipleRefactorWizardDialog(Shell parentShell, IWizard newWizard) {
 		super(parentShell, newWizard);	
 		
-		setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+		setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL | SWT.RESIZE);
 	}
 	
 	@Override

@@ -39,6 +39,10 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+/**
+ * Copied and Modified version Standalone.java from JDeodorant 
+ *
+ */
 public class Standalone {
 
 	public static List<MoveMethodCandidateRefactoring> getMoveMethodRefactoringOpportunities(IJavaProject project, IFile file) {

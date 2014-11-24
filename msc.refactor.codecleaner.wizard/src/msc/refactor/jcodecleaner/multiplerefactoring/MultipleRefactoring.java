@@ -20,9 +20,9 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 /**
- * Multiple-Refactoring facilitates the combination of several Refactorings
+ * Class to facilitate the combination of several Refactorings
  * 
- * @author Sandra Mulligan
+ * @author mulligans
  */
 public class MultipleRefactoring extends Refactoring {
 

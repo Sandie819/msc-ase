@@ -1,5 +1,6 @@
 package msc.refactor.jcodecleaner.wizard.view.pages;
 
+import gr.uom.java.distance.ExtractClassCandidateRefactoring;
 import gr.uom.java.distance.MoveMethodCandidateRefactoring;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSlice;
 import gr.uom.java.jdeodorant.refactoring.manipulators.ASTSliceGroup;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import msc.refactor.jcodecleaner.multiplerefactoring.PreviewClassBuilder;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -43,9 +46,12 @@ public class PreviewSubPanel {
 
 	private SourceViewer sourceViewer;
 	private Group previewGroup;
+	private PreviewClassBuilder previewClassBuilder;
 
 	public PreviewSubPanel(Group previewGroup) {
 		this.previewGroup = previewGroup;
+		
+		previewClassBuilder = new PreviewClassBuilder();
 	}
 
 	/**
@@ -76,8 +82,9 @@ public class PreviewSubPanel {
 	/**
 	 * @param extractClassRefactoring
 	 */
-	public void addPreviewForExtractClassRefactoring(ExtractClassRefactoring extractClassRefactoring) {
-		CreateCompilationUnitChange unit = extractClassRefactoring.createExtractedClass();
+	public void addPreviewForExtractClassRefactoring(ExtractClassRefactoring extractClassRefactoring, 
+			 IFile file, ExtractClassCandidateRefactoring candidate) {
+		CreateCompilationUnitChange unit = previewClassBuilder.createExtractedClass(extractClassRefactoring, candidate, file);
 		IDocument document = new Document(unit.getPreview());
 		createPreviewAndSource("New class "+extractClassRefactoring.getExtractedTypeName(), document);
 

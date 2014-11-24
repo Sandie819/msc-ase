@@ -9,7 +9,7 @@ package msc.refactor.jcodecleaner.analyser.metrics;
 
 /**
  * Taken & modified from Simple Metrics
- * Modified to work using IMethod 
+ * Modified to work with IMethod 
  */
 import java.util.Collection;
 import java.util.Collections;

@@ -25,5 +25,4 @@ public enum BadSmellEnum {
 		this.badSmellName = badSmellName;
 	}
 	
-	
 }

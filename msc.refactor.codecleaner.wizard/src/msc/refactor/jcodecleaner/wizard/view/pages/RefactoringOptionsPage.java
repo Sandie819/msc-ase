@@ -85,7 +85,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	@Override
 	public void createControl(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(1, true));
+		composite.setLayout(new GridLayout(1, false));
 
 		// headingGroup = new Group(composite, SWT.BORDER_DOT);
 
@@ -339,7 +339,8 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 									System.out.println(text.getText());
 								}
 							});
-							previewSubPanel.addPreviewForExtractClassRefactoring(extractClassRefactoring);
+							previewSubPanel.addPreviewForExtractClassRefactoring(extractClassRefactoring, file,
+									controller.getModel().getRefactoringOpportunities().getExtractClassOpportunities().iterator().next().getCandidates().get(0));
 						}
 
 					} else if (refactor == RefactoringEnum.MOVE_METHOD) {

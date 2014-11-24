@@ -16,6 +16,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 
+/**
+ * Class which generates metrics and identifies
+ * refactoring opportunities 
+ * 
+ * @author mulligans
+ *
+ */
 public class Analyser {
 
 	private Set<RefactoringEnum> refactoringsForMetrics;
@@ -24,6 +31,10 @@ public class Analyser {
 		refactoringsForMetrics = new HashSet<RefactoringEnum>();
 	}
 
+	/**
+	 * @param file
+	 * @param metrics
+	 */
 	public void analyseSelectionAndUpdateMetricValues(IFile file, List<Metric> metrics) {
 		for(Metric metric: metrics) {
 			metric.calculateMetricValue(file);
@@ -35,8 +46,12 @@ public class Analyser {
 			System.out.println(metric.toString());
 		}
 	}
-	
 
+	/**
+	 * @param identifiedRefactorings
+	 * @param metrics
+	 * @return
+	 */
 	public double calculateFitnessFunction(Set<RefactoringEnum> identifiedRefactorings,
 			List<Metric> metrics){
 		double fitness = 0;
@@ -56,6 +71,11 @@ public class Analyser {
 		return fitness;
 	}
 
+	/**
+	 * Identifies refactoring opportunities for given class file
+	 * @param file
+	 * @return RefactoringOpportunitiesModel
+	 */
 	public RefactoringOpportunitiesModel identifyRefactoringOpportunities(IFile file){
 
 		RefactoringOpportunitiesModel refactoringOpportunities = new RefactoringOpportunitiesModel();
@@ -68,8 +88,7 @@ public class Analyser {
 
 				if(!extractedClassCandidates.isEmpty()) {
 					refactoringOpportunities.setExtractClassOpportunities(extractedClassCandidates);							
-					refactoringOpportunities.addRefactoringOption(RefactoringEnum.EXTRACT_CLASS);							
-
+					refactoringOpportunities.addRefactoringOption(RefactoringEnum.EXTRACT_CLASS);
 				}		
 			}
 
@@ -89,8 +108,7 @@ public class Analyser {
 					refactoringOpportunities.setMoveMethodOpportunities(moveMethodOpportunities);
 					refactoringOpportunities.addRefactoringOption(RefactoringEnum.MOVE_METHOD);
 				}	
-			}
-			
+			}			
 		}
 		return refactoringOpportunities;
 

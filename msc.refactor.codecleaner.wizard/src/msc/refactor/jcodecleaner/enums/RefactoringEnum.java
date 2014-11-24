@@ -37,5 +37,4 @@ public enum RefactoringEnum {
 		this.refactoringType = refactoringType;
 	}
 	
-	
 }
