@@ -1,7 +1,7 @@
 Project Progress
 
 1. Plugin 
-	- Built wizard style approach (DONE)
+	- Build wizard style approach (DONE)
 2. Go Button that applies a random refactoring 
 	- "Apply Random Refactoring" button (DONE)
 	- When clicked renames first method in class (DONE)
@@ -10,9 +10,11 @@ Project Progress
 	- Clean class - organise imports, remove unused methods, variables etc (In Progress)
 	- Another series of refactorings to include logical organisation of code in the class
 4. Add metrics  
-	- Cohesion Metrics: LCOM2 & LCOM3 (Done)
-	- Other Cohesion Metrics (In Progress)
+	- Cohesion Metrics: LCOM2 & LCOM3 (Done) 
+	- Other Cohesion Metrics - LCOM1, LCOM4, Cyclomatic Complexity (Done)
 	- Combining Metrics to create a Fitness Function (Done)
+	- Coupling Metric - Depth of Inheritance Tree, 
+			  - Instability is the ratio between Efferent Coupling and the Afferent Coupling
 5. User page to select refactorings based on analysis of code (using metrics, fitness function from point 4 above) (Done)
 6. Code smell detection
 	- Incorporate FindBugs Plugin?? Now looking at JDeodorant
