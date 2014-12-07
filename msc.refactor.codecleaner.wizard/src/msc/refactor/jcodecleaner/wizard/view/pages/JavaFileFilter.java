@@ -6,7 +6,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-
+/**
+ * @author mulligans
+ *
+ */
 public class JavaFileFilter extends ViewerFilter {
 
     @Override

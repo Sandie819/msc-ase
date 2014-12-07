@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -40,16 +40,16 @@ public class CyclomaticComplexity extends Metric {
 		super("Cyclomatic Complexity", "CC", 2);
 	}
 
-	public double calculateMetricValue(IFile file) {
+	public double calculateMetricValue(IFile file, IProgressMonitor monitor) {
 		ICompilationUnit cu = JavaCore.createCompilationUnitFrom(file);
-		CompilationUnit compilationUnit = parse(new NullProgressMonitor(), cu);
+		CompilationUnit compilationUnit = parse(monitor, cu);
 
 		compilationUnit.accept(new ASTVisitor() {
 
 			@Override
 			public boolean visit(final MethodDeclaration method) {
 				
-				System.out.println(method.getName());
+				//System.out.println(method.getName());
 				if (!method.isConstructor()) {
 					NUM_METHODS++;
 					
@@ -57,51 +57,51 @@ public class CyclomaticComplexity extends Metric {
 						@Override
 						public boolean visit(CatchClause catchNode) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has CatchClause");
+							//System.out.println(method.getName()+ " has CatchClause");
 							return true;
 						}
 						@Override
 						public boolean visit(ConditionalExpression conditionalNode) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has ConditionalExpression");
+							//System.out.println(method.getName()+ " has ConditionalExpression");
 							return true;
 						}
 						@Override
 						public boolean visit(DoStatement node) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has DoStatement");
+							//System.out.println(method.getName()+ " has DoStatement");
 							return true;
 						}
 						@Override
 						public boolean visit(EnhancedForStatement node) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has EnhancedForStatement");
+							//System.out.println(method.getName()+ " has EnhancedForStatement");
 							return true;
 						}
 
 						@Override
 						public boolean visit(ForStatement node) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has ForStatement");
+							//System.out.println(method.getName()+ " has ForStatement");
 							return true;
 						}
 						@Override
 						public boolean visit(IfStatement node) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has IfStatement");
+							//System.out.println(method.getName()+ " has IfStatement");
 							return true;
 						}
 						@Override
 						public boolean visit(SwitchStatement node) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has SwitchStatement");
+							//System.out.println(method.getName()+ " has SwitchStatement");
 							return true;
 						}
 
 						@Override
 						public boolean visit(WhileStatement node) {
 							COMPLEXITY++;
-							System.out.println(method.getName()+ " has WhileStatement");
+							//System.out.println(method.getName()+ " has WhileStatement");
 							return true;
 						}
 						

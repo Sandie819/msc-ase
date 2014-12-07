@@ -2,6 +2,7 @@ package msc.refactor.jcodecleaner.analyser.metrics;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -30,9 +31,11 @@ public class AfferentCoupling extends Metric {
 	}
 
 	@Override
-	public double calculateMetricValue(IFile file) {
+	public double calculateMetricValue(IFile file, IProgressMonitor monitor) {
+		numberOfReferences = 0;
 		
-		findClassReferences(file);
+		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
+		findClassReferences(file,compilationUnit);
 		
 		setMetricValue(numberOfReferences);
 		return numberOfReferences;
@@ -45,8 +48,7 @@ public class AfferentCoupling extends Metric {
 	 * @param field
 	 * @return
 	 */
-	private void findClassReferences(IFile file) {
-		ICompilationUnit complilationUnit = JavaCore.createCompilationUnitFrom(file);
+	private void findClassReferences(IFile file, ICompilationUnit compilationUnit) {
 		
 		String classNamePattern = file.getName().replace(file.getFileExtension(), "");
 
@@ -56,15 +58,15 @@ public class AfferentCoupling extends Metric {
 				SearchPattern.R_PATTERN_MATCH);
 		
 		SearchEngine searchEngine = new SearchEngine();
-		IJavaSearchScope scope = SearchEngine.createJavaSearchScope((IJavaElement[]) new IJavaProject[] { complilationUnit.getJavaProject() });
+		IJavaSearchScope scope = SearchEngine.createJavaSearchScope((IJavaElement[]) new IJavaProject[] { compilationUnit.getJavaProject() });
 		
 		SearchRequestor requestor = new SearchRequestor() {
 			public void acceptSearchMatch(SearchMatch match) {
 				IJavaElement e = (IJavaElement) match.getElement();
-				String elementName = e.getElementName();
+				//String elementName = e.getElementName();
 				if(e!=null) {
 					numberOfReferences++;
-					System.out.print("Found class in"+ elementName);
+					//System.out.print("Found class in"+ elementName);
 				}
 			}
 		};

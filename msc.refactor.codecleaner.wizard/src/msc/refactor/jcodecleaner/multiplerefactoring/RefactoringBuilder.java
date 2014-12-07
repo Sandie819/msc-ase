@@ -13,8 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import msc.refactor.jcodecleaner.wizard.controller.WizardController;
-import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
+import msc.refactor.jcodecleaner.analyser.Standalone;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -42,26 +41,19 @@ public class RefactoringBuilder {
 	private boolean classFound = false;
 	
 	/**
+	 * @param subProgressMonitor 
 	 * @param compilationUnit
 	 */
-	public ExtractMethodRefactoring getExtractedMethodRefactoring(WizardController controller) {
+	public ExtractMethodRefactoring getExtractedMethodRefactoring(ICompilationUnit iCompilationUnit, IFile file){
 		ExtractMethodRefactoring extractMethodRefactoring = null;
 
-		IFile file = controller.getModel().getIFile();
-		ICompilationUnit iCompilationUnit = JavaCore.createCompilationUnitFrom(file);
-
-		RefactoringOpportunitiesModel opportunitites = controller.getModel()
-				.getRefactoringOpportunities();
-
-		Set<ASTSliceGroup> extractMethodOpportunities = opportunitites
-				.getExtractMethodOpportunities();
+		Set<ASTSliceGroup> extractMethodOpportunities = Standalone.getExtractMethodRefactoringOpportunitiesForClass(iCompilationUnit.getJavaProject(),file);
 
 		for (ASTSliceGroup astSliceGroup : extractMethodOpportunities) {
 
 			for (ASTSlice astSlice : astSliceGroup.getCandidates()) {
 
-				IProgressMonitor monitor = new NullProgressMonitor();
-				CompilationUnit compilationUnit = parse(monitor,
+				CompilationUnit compilationUnit = parse(new NullProgressMonitor(),
 						iCompilationUnit);
 
 				extractMethodRefactoring = new ExtractMethodRefactoring(
@@ -71,19 +63,17 @@ public class RefactoringBuilder {
 		}
 		return extractMethodRefactoring;
 	}
-
+	
 	/**
-	 * @param compilationUnit
+	 * @param extractClassOpportunities
+	 * @return
 	 */
-	public Set<ExtractClassRefactoring> getExtractedClassRefactoring(WizardController controller) {
+	public Set<ExtractClassRefactoring> getExtractedClassRefactoring(ICompilationUnit compilationUnit, IFile file) {
 		Set<ExtractClassRefactoring> extractClassRefactorings = new HashSet<ExtractClassRefactoring>();
+	
+		Set<ExtractClassCandidateGroup> extractClassOpportunities = 
+				Standalone.getExtractClassRefactoringOpportunitiesForClass(compilationUnit.getJavaProject(), file);
 		
-		RefactoringOpportunitiesModel opportunitites = controller.getModel()
-				.getRefactoringOpportunities();
-
-		Set<ExtractClassCandidateGroup> extractClassOpportunities = opportunitites
-				.getExtractClassOpportunities();
-
 		for (ExtractClassCandidateGroup candidateGroup : extractClassOpportunities) {
 
 			ExtractClassCandidateRefactoring candidateRefactoring = candidateGroup.getCandidates().get(0);
@@ -94,8 +84,7 @@ public class RefactoringBuilder {
 			String[] tokens = candidateRefactoring.getTargetClassName().split("\\.");
 			String extractedClassName = tokens[tokens.length-1];
 
-			validateNewClassName(extractedClassName, sourceFile);
-			
+			validateNewClassName(extractedClassName, sourceFile);			
 
 			Set<VariableDeclaration> extractedFieldFragments = candidateRefactoring.getExtractedFieldFragments();
 			Set<MethodDeclaration> extractedMethods = candidateRefactoring.getExtractedMethods();
@@ -198,15 +187,17 @@ public class RefactoringBuilder {
 		return (CompilationUnit) parser.createAST(monitor);
 	}
 
-	public Set<MoveMethodRefactoring> getMoveMethodRefactoring(WizardController controller) {
-
+	/**
+	 * @param controller
+	 * @return
+	 */
+	public Set<MoveMethodRefactoring> getMoveMethodRefactoring(ICompilationUnit compilationUnit, IFile file) {
+		
 		Set<MoveMethodRefactoring> moveMethodRefactorings = new HashSet<MoveMethodRefactoring>();
-
-		RefactoringOpportunitiesModel opportunitites = controller.getModel()
-				.getRefactoringOpportunities();
-
-		List<MoveMethodCandidateRefactoring> moveMethodCandidates = opportunitites.getMoveMethodOpportunities();
-
+		
+		List<MoveMethodCandidateRefactoring> moveMethodCandidates = 
+				Standalone.getMoveMethodRefactoringOpportunities(compilationUnit.getJavaProject(), file);
+		
 		for(MoveMethodCandidateRefactoring candidateRefactoring: moveMethodCandidates) {
 
 			CompilationUnit sourceCompilationUnit = (CompilationUnit)candidateRefactoring.getSourceClassTypeDeclaration().getRoot();			

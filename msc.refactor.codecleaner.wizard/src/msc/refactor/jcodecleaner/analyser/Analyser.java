@@ -13,6 +13,9 @@ import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 
@@ -37,13 +40,25 @@ public class Analyser {
 	 */
 	public void analyseSelectionAndUpdateMetricValues(IFile file, List<Metric> metrics) {
 		for(Metric metric: metrics) {
-			metric.calculateMetricValue(file);
+			metric.calculateMetricValue(file, new NullProgressMonitor());
 
 			if(metric.metricExceedsThreshold()){
 				refactoringsForMetrics.addAll(metric.getApplicableMetricRefactorings());
 			}
 
 			System.out.println(metric.toString());
+		}
+	}
+	
+	/**
+	 * @param file
+	 * @param metrics
+	 */
+	public void analyseSelectionAndGetMetricValues(IFile file, List<Metric> newMetrics,
+			IProgressMonitor monitor) {
+		
+		for(Metric metric: newMetrics) {
+			metric.calculateMetricValue(file, new SubProgressMonitor(monitor, 3));
 		}
 	}
 

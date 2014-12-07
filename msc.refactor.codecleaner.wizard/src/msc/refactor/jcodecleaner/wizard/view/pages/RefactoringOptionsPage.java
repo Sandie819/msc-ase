@@ -18,6 +18,7 @@ import msc.refactor.jcodecleaner.multiplerefactoring.RefactoringBuilder;
 import msc.refactor.jcodecleaner.wizard.controller.WizardController;
 import msc.refactor.jcodecleaner.wizard.model.RefactoringOpportunitiesModel;
 import msc.refactor.jcodecleaner.wizard.model.WizardModel;
+import msc.refactor.jcodecleaner.wizard.view.pages.runnable.RunnableCreatorFactory;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -52,12 +53,11 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	private Map<Button, RefactoringEnum> refactoringCheckboxMap;
 	private RefactoringBuilder refactoringBuilder;
 	private MultipleRefactoring multipleRefactoring;
-	private PreviewSubPanel previewSubPanel;
-	//private PageListener pageListener;
+	private RecalculatedMetricsPanel recalculatedMetricsPanel;
 
 	private Group refactoringOptionsGroup;
 	private Group metricResultsGroup;
-	private Group previewGroup;
+	private Group recalculatedMetricsGroup;
 	private Group userInput;
 
 	private List<Metric> metrics;
@@ -79,7 +79,6 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 
 		refactoringCheckboxMap = new HashMap<Button, RefactoringEnum>();
 		refactoringBuilder = new RefactoringBuilder();
-		//pageListener = new PageListener(controller);
 	}
 
 	@Override
@@ -87,27 +86,27 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
 
-		// headingGroup = new Group(composite, SWT.BORDER_DOT);
-
-		metricResultsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
-		metricResultsGroup.setText("Metric Results");
-		metricResultsGroup.setFont(DEFAULT_FONT);
-		metricResultsGroup.setLayout(new GridLayout(1, false));
-		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		metricResultsGroup.pack();
-
 		refactoringOptionsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
 		refactoringOptionsGroup.setText("Refactoring Options Available");
 		refactoringOptionsGroup.setFont(DEFAULT_FONT);
 		refactoringOptionsGroup.setLayout(new GridLayout(4, true));
 		refactoringOptionsGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		refactoringOptionsGroup.pack();
-
-		previewGroup = new Group(composite, SWT.BORDER_DOT);
-		previewGroup.setLayout(new GridLayout(1, false));
-		previewGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
-		previewGroup.setFont(DEFAULT_FONT);
-		previewSubPanel = new PreviewSubPanel(previewGroup);
+		
+		metricResultsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+		metricResultsGroup.setText("Current Metric Values");
+		metricResultsGroup.setFont(DEFAULT_FONT);
+		metricResultsGroup.setLayout(new GridLayout(1, false));
+		metricResultsGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		metricResultsGroup.pack();
+		
+		recalculatedMetricsGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
+		recalculatedMetricsGroup.setLayout(new GridLayout(1, false));
+		recalculatedMetricsGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		recalculatedMetricsGroup.setText("Metric Values (With refactoring applied)");
+		recalculatedMetricsGroup.setFont(DEFAULT_FONT);
+		recalculatedMetricsGroup.pack();
+		recalculatedMetricsPanel = new RecalculatedMetricsPanel(recalculatedMetricsGroup, controller, getContainer());
 
 		setControl(composite);
 		setPageComplete(false);
@@ -125,46 +124,43 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		final WizardModel model = controller.getModel();
 
 		try {
+			
 			getContainer().run(true, true, new IRunnableWithProgress() {
 
 				@Override
 				public void run(IProgressMonitor monitor) {
+
 					try {
-						monitor.beginTask("Computing refactoring list: ", 4);
+						monitor.beginTask("Computing refactoring list: ", 3);
 
 						IFile file = model.getIFile();
 						multipleRefactoring.removeRefactoring();
 
-						monitor.subTask(" analysing class ");
-						Thread.sleep(500);
-
-						Analyser analyser = new Analyser();
+						monitor.subTask(" analysing class ");					
+						Analyser analyser = new Analyser();				
 						analyser.analyseSelectionAndUpdateMetricValues(file, model.getMetrics());
+						monitor.worked(1);
 
 						monitor.subTask(" calculating metrics ");
-						Thread.sleep(500);
-
 						setRefactoringOpportunities(analyser.identifyRefactoringOpportunities(file));
+						monitor.worked(1);
+						
 						monitor.subTask(" identifying possible refactorings");
-						Thread.sleep(500);
-
 						model.addFitnessFunctionCalculation(analyser.calculateFitnessFunction(
 								refactoringOpportunities.getAvailableRefactorings(), 
 								model.getMetrics()));
+						Thread.sleep(700);
+						monitor.worked(1);
 						
+						monitor.done();
 						model.setRefactoringOpportunities(refactoringOpportunities);
-
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					monitor.worked(1);
-					monitor.done();
-
 				}
 			});
 		} catch (Exception e) {
-
+			System.out.println(e.getStackTrace());
 		}
 		createPanels(controller.getModel().getMetrics(), getRefactoringOpportunities().getAvailableRefactorings(),
 				model.getFitnessFunctionCalulations());
@@ -181,9 +177,8 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 	public void createPanels(List<Metric> metrics, Set<RefactoringEnum> refactorings,
 			LinkedList<Double> fitnessFunctionCalcs) {
 
-		previewGroup.setVisible(false);
+		recalculatedMetricsGroup.setVisible(false);
 
-		// createHeadingPanel();
 		createMetricResultPanel(metrics);
 		createRefactoringOptions(refactorings);
 
@@ -199,7 +194,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 		clearGroup(metricResultsGroup);
 
 		Group metricGroup = new Group(metricResultsGroup, SWT.NONE);
-		metricGroup.setLayout(new GridLayout(2, false));
+		metricGroup.setLayout(new GridLayout(4, false));
 
 		for (Metric metric : metrics) {
 			Label metricLabel = new Label(metricGroup, SWT.NONE);
@@ -207,7 +202,7 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 			metricLabel.setToolTipText(metric.getMetricFullName());
 
 			Text metricTextValue = new Text(metricGroup, SWT.NONE);
-			metricTextValue.setText(String.valueOf(metric.getMetricValue()));
+			metricTextValue.setText(String.format("%.3f", metric.getMetricValue()));
 			metricTextValue.setEditable(false);
 		}
 
@@ -299,9 +294,15 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 					multipleRefactoring.removeRefactoring(refactor);
 				} else {
 					if (refactor == RefactoringEnum.EXTRACT_METHOD) {
+						
 						final ExtractMethodRefactoring extractMethodRefactoring = refactoringBuilder
-								.getExtractedMethodRefactoring(controller);
+								.getExtractedMethodRefactoring(iCompilationUnit, file);
+						
 						multipleRefactoring.addRefactoringsToBeDone(extractMethodRefactoring);
+						
+						recalculatedMetricsPanel.recalculateMetrics(file, controller.getModel().getMetrics(),
+								RunnableCreatorFactory.getInstance(extractMethodRefactoring, controller));
+						
 						userInputText.setVisible(true);
 						userInput.setVisible(true);
 						userInputLabel.setVisible(true);
@@ -316,14 +317,15 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 								System.out.println(text.getText());
 							}
 						});
-
-						previewSubPanel.addPreviewForExtractMethodRefactoring(controller.getModel()
-								.getRefactoringOpportunities().getExtractMethodOpportunities(), file);
-
+						
 					} else if (refactor == RefactoringEnum.EXTRACT_CLASS) {
 						Set<ExtractClassRefactoring> extractClassRefactorings = refactoringBuilder
-								.getExtractedClassRefactoring(controller);
+								.getExtractedClassRefactoring(iCompilationUnit, file);
+						
 						for (final ExtractClassRefactoring extractClassRefactoring : extractClassRefactorings) {
+							recalculatedMetricsPanel.recalculateMetrics(file, controller.getModel().getMetrics(),
+									RunnableCreatorFactory.getInstance(extractClassRefactoring, controller));
+							
 							multipleRefactoring.addRefactoringsToBeDone(extractClassRefactoring);
 							userInputText.setVisible(true);
 							userInputLabel.setVisible(true);
@@ -339,21 +341,20 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 									System.out.println(text.getText());
 								}
 							});
-							previewSubPanel.addPreviewForExtractClassRefactoring(extractClassRefactoring, file,
-									controller.getModel().getRefactoringOpportunities().getExtractClassOpportunities().iterator().next().getCandidates().get(0));
 						}
 
 					} else if (refactor == RefactoringEnum.MOVE_METHOD) {
 						Set<MoveMethodRefactoring> moveMethodRefactorings = refactoringBuilder
-								.getMoveMethodRefactoring(controller);
+								.getMoveMethodRefactoring(iCompilationUnit, file);
 						for (MoveMethodRefactoring moveMethod : moveMethodRefactorings) {
 							multipleRefactoring.addRefactoringsToBeDone(moveMethod);
-							previewSubPanel.addPreviewForMoveMethodRefactoring(controller.getModel()
-									.getRefactoringOpportunities().getMoveMethodOpportunities());
+							recalculatedMetricsPanel.recalculateMetrics(file, controller.getModel().getMetrics(),
+									RunnableCreatorFactory.getInstance(moveMethod, controller));
 						}
 					}
 
 				}
+				composite.layout();
 				setPageComplete(anyCheckBoxSelected());
 
 			}
@@ -368,10 +369,10 @@ public class RefactoringOptionsPage extends UserInputWizardPage {
 						if (!selected) {
 							checkBox.setEnabled(true);
 							userInputText.setVisible(false);
+							userInputText.setText("");
 							userInputLabel.setVisible(false);
 							userInput.setVisible(false);
-							// userInputText.remove
-							previewGroup.setVisible(false);
+							recalculatedMetricsGroup.setVisible(false);
 						}
 					}
 				}

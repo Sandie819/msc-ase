@@ -8,6 +8,7 @@ import java.util.Set;
 import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaCore;
@@ -18,7 +19,7 @@ public class LCOM1 extends Metric  {
 		super("Lack of Cohesion of Methods (1)", "LCOM1", 0);
 	}
 
-	public double calculateMetricValue(IFile file) {
+	public double calculateMetricValue(IFile file, IProgressMonitor monitor) {
 		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
 		Set<IMethod> methods = getMethodsFromClass(compilationUnit);
 		

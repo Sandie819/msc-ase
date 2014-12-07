@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
@@ -30,9 +30,9 @@ public class EfferentCoupling extends Metric {
 	}
 
 	@Override
-	public double calculateMetricValue(IFile file) {
-		ICompilationUnit iComplilationUnit = JavaCore.createCompilationUnitFrom(file);		
-		CompilationUnit compilationUnit = parse(new NullProgressMonitor(), iComplilationUnit);
+	public double calculateMetricValue(IFile file, IProgressMonitor monitor) {
+		ICompilationUnit iCompilationUnit = JavaCore.createCompilationUnitFrom(file);	
+		CompilationUnit compilationUnit = parse(monitor, iCompilationUnit);
 		
 		Set<IType> results = findDependencies(compilationUnit);
 		
@@ -40,7 +40,7 @@ public class EfferentCoupling extends Metric {
 		for(IType type: results) {
 			
 			if(type.getParent().getJavaProject().getElementName().equals(
-					iComplilationUnit.getJavaProject().getElementName())) {
+					iCompilationUnit.getJavaProject().getElementName())) {
 				dependencies++;
 			}
 		}
@@ -61,7 +61,7 @@ public class EfferentCoupling extends Metric {
 	                return false;
 	            IJavaElement element = typeBinding.getJavaElement();
 	            if (element != null && element instanceof IType){
-	            	System.out.println("Dependency: "+ element.getElementName());
+	            	//System.out.println("Dependency: "+ element.getElementName());
 	                result.add((IType)element);
 	            }
 	            return false;

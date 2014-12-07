@@ -1,6 +1,7 @@
 package msc.refactor.jcodecleaner.analyser.metrics;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * Instability is the ratio between efferent coupling (Ce) and the total coupling (Ce + Ca)
@@ -21,9 +22,9 @@ public class Instability extends Metric {
 	}
 
 	@Override
-	public double calculateMetricValue(IFile file) {
-		double ca = afferentCoupling.calculateMetricValue(file);
-		double ce = efferentCoupling.calculateMetricValue(file);
+	public double calculateMetricValue(IFile file, IProgressMonitor monitor) {
+		double ca = afferentCoupling.calculateMetricValue(file, monitor);
+		double ce = efferentCoupling.calculateMetricValue(file, monitor);
 		
 		double i = (ce/ (ce+ca));
 		

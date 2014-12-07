@@ -6,6 +6,7 @@ import java.util.List;
 import msc.refactor.jcodecleaner.enums.RefactoringEnum;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
@@ -18,9 +19,8 @@ public class DepthOfInheritanceTree extends Metric {
 		super("Depth of Inheritance Tree", "DIT", 3);
 	}
 
-	public double calculateMetricValue(IFile file) {
+	public double calculateMetricValue(IFile file, IProgressMonitor monitor) {
 		ICompilationUnit compilationUnit = JavaCore.createCompilationUnitFrom(file);
-
 		double depthOfInheritance = 0.0;
 
 		try{

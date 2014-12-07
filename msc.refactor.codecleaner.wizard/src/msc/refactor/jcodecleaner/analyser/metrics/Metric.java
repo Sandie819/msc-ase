@@ -23,6 +23,8 @@ public abstract class Metric {
 	protected String metricFullName;
 	protected String metricShortName;
 	protected double metricValue;
+	protected double originalMetricValue;
+	
 	protected List<RefactoringEnum> applicableRefactorings;
 	
 	public Metric(String metricFullName, String metricShortName, double threshold) {
@@ -31,7 +33,7 @@ public abstract class Metric {
 		this.metricShortName = metricShortName;
 	}
 	
-	public abstract double calculateMetricValue(IFile file);
+	public abstract double calculateMetricValue(IFile file, IProgressMonitor monitor);
 
 	public double getMetricValue() {
 		return metricValue;
@@ -63,6 +65,14 @@ public abstract class Metric {
 
 	public void setMetricShortName(String metricShortName) {
 		this.metricShortName = metricShortName;
+	}
+	
+	public double getOriginalMetricValue() {
+		return originalMetricValue;
+	}
+
+	public void setOriginalMetricValue(double originalMetricValue) {
+		this.originalMetricValue = originalMetricValue;
 	}
 
 	/**

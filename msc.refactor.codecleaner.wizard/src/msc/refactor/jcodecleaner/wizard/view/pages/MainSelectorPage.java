@@ -10,7 +10,7 @@ import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 /**
- * @author Sandra Mulligan
+ * @author mulligans
  *
  */
 public class MainSelectorPage extends UserInputWizardPage {

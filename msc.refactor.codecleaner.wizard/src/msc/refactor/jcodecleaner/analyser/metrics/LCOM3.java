@@ -28,7 +28,7 @@ import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 
-public class LCOM2 extends Metric  {
+public class LCOM3 extends Metric  {
 
 	private Set<IMethod> methods = new HashSet<IMethod>();
 	private Set<IField> fields = new HashSet<IField>();
@@ -36,8 +36,8 @@ public class LCOM2 extends Metric  {
 
 	private static Boolean METHOD_HAS_REF = null;
 
-	public LCOM2() {
-		super("Lack of Cohesion of Methods (2)", "LCOM2", 0);
+	public LCOM3() {
+		super("Lack of Cohesion of Methods (3)", "LCOM3", 0);
 		variable_map_counter = new HashMap<IField, Integer>();
 	}
 	
@@ -63,18 +63,18 @@ public class LCOM2 extends Metric  {
 
 		double sumMF = mf/variable_map_counter.size();
 
-		double lcom2 = 0.0;
-		if(f > 0 && m > 0) {
-			//(0 is good)
-			//LCOM2 = 1 - sum(mf)/(m*f)
-			lcom2 = 1.0 - (double)sumMF / (double)(m*f);
-			//System.out.println("lcom2:" + lcom2);			
+		double lcom3 = 0.0;
+		if(f > 0 && m > 1) {
+			//LCOM3 = (m - sum(mA)/a) / (m-1)
+			// (1 to 2 good; 0 bad, split)
+			lcom3 = ((double)m - ((double)sumMF/(double)f)) / ((double)m - 1.0);
+			//System.out.println("lcom3:" + lcom3);
 		}
-		
-		BigDecimal lcomBigDecimal = new BigDecimal(lcom2).setScale(3, RoundingMode.CEILING);
+
+		BigDecimal lcomBigDecimal = new BigDecimal(lcom3).setScale(3, RoundingMode.CEILING);
 	
 		setMetricValue(lcomBigDecimal.doubleValue());
-		return lcom2;
+		return lcom3;
 	}
 
 	/**
@@ -135,7 +135,6 @@ public class LCOM2 extends Metric  {
 	 */
 	private static boolean findSearchPattern(IMethod method, IField field) {
 		METHOD_HAS_REF = false;
-		
 		final String attributeName = field.getElementName();
 		try {			
 			SearchPattern pattern = SearchPattern.createPattern(attributeName, 

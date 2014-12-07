@@ -2,13 +2,16 @@ package msc.refactor.jcodecleaner.wizard.controller;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import msc.refactor.jcodecleaner.analyser.metrics.CyclomaticComplexity;
+import msc.refactor.jcodecleaner.analyser.metrics.DepthOfInheritanceTree;
 import msc.refactor.jcodecleaner.analyser.metrics.Instability;
-import msc.refactor.jcodecleaner.analyser.metrics.LCOM1;
 import msc.refactor.jcodecleaner.analyser.metrics.LCOM2;
+import msc.refactor.jcodecleaner.analyser.metrics.LCOM3;
 import msc.refactor.jcodecleaner.analyser.metrics.LCOM4;
 import msc.refactor.jcodecleaner.analyser.metrics.Metric;
 import msc.refactor.jcodecleaner.wizard.model.WizardModel;
@@ -49,14 +52,23 @@ public class WizardController {
 		model.setDeodorantActivator(new gr.uom.java.jdeodorant.refactoring.Activator());		
 	}
 	
-	public Set<Metric> projectMetrics(){
-		Set<Metric> metrics = new HashSet<Metric>();
-		metrics.add(new LCOM1());
+	public List<Metric> projectMetrics(){
+		List<Metric> metrics = new ArrayList<Metric>();
+		//metrics.add(new LCOM1());
 		metrics.add(new LCOM2());
+		metrics.add(new LCOM3());
 		metrics.add(new LCOM4());
 		metrics.add(new CyclomaticComplexity());
 		metrics.add(new Instability());
+		metrics.add(new DepthOfInheritanceTree());
 		
+		Collections.sort(metrics, new Comparator<Metric>() {
+			@Override
+	        public int compare(final Metric object1, final Metric object2) {
+	            return object1.getMetricFullName().compareTo(object2.getMetricFullName());
+	        }
+		});
+	        
 		return metrics;
 	}
 }
